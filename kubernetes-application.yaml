@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-stream
+  labels:
+    app: bulk-stream
+spec:
+  selector:
+    matchLabels:
+      app: bulk-stream
+  template:
+    metadata:
+      labels:
+        app: bulk-stream
+    spec:
+      containers:
+      - name: bulk-stream
+        image: bulk-stream
+        ports:
+        - containerPort: 8080
+        - containerPort: 6565
