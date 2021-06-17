@@ -23,6 +23,6 @@ asdf plugin add tilt && \
 tilt up      
 ```
 
-## [Demonstration](docs/demo.mp4)
+## Demonstration
 
-[![demo]()](docs/demo.mp4 "Link Title")
+[![demo](docs/demo.png)](https://www.youtube.com/watch?v=768xOV5Ljj4 "Link Title")
