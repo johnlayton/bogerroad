@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package org.bogerroad;
+
+option java_multiple_files = true;
+option java_generic_services = true;
+option java_package = "org.bogerroad";
+
+service MessageService {
+  rpc Create (TemplateRequest) returns (TemplateResponse) {}
+  rpc Send (stream MessageRequest) returns (stream MessageResponse) {}
+}
+
+message TemplateRequest {
+  string template = 1;
+}
+
+message TemplateResponse {
+  string id = 1;
+}
+
+message MessageRequest {
+  string templateId = 1;
+  Contact contact = 2;
+  map<string, string> data = 3;
+
+  message Contact {
+    string email = 1;
+    string phone = 2;
+    string mobile = 3;
+    string firstName = 4;
+    string lastName = 5;
+  }
+}
+
+message MessageResponse {
+  string message = 1;
+}
+
