@@ -24,5 +24,4 @@ tilt up
 ```
 
 ## Demonstration
-
-[![demo](docs/demo.png)](https://www.youtube.com/watch?v=768xOV5Ljj4 "Link Title")
+[![demo](docs/demo.png)](https://www.youtube.com/watch?v=768xOV5Ljj4?t=149 "Link Title")
