@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+grpc:
+  enableReflection: true
+  port: 6565
+
+spring:
+  rabbitmq:
+    username: guest
+    password: guest
+    addresses: amqp://rabbitmq:5672
+    template:
+      exchange: bulk-message-exchange
+
