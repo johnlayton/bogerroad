@@ -25,4 +25,4 @@ tilt up
 
 ## Demonstration
 
-![](docs/demo.mp4)
+![Complete](docs/demo.mp4)
