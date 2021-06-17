@@ -7,7 +7,7 @@ The Spring Boot application will manage a [gRPC service](bulk-stream/src/main/pr
 The Docker image for the Spring Boot application will be built using the [Spring Boot Plugin](https://docs.spring.io/spring-boot/docs/2.5.0/gradle-plugin/reference/htmlsingle/) which will use CN Buildpacks to [Build the image](https://docs.spring.io/spring-boot/docs/2.5.0/gradle-plugin/reference/htmlsingle/#build-image)
 The Application code is [Kotlin](https://kotlinlang.org/)
 
-## Quickstart;
+## Quickstart
 
 ```shell
 brew install asdf
@@ -23,8 +23,5 @@ asdf plugin add tilt && \
 tilt up      
 ```
 
-## Demonstration
+## [Demonstration](docs/demo.mp4)
 
-<video width="640" height="480" controls>
-  <source src="docs/demo.mp4" type="video/mp4">
-</video>
