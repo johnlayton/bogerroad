@@ -1,3 +1,11 @@
 /bulk-stream/.gradle/
 /bulk-stream/build/
+/bulk-upload/.gradle/
+/bulk-upload/src/main/java/
+/bulk-upload/src/main/resources/
+/bulk-upload/build/
+/tilt_modules/
+/.idea/
+/.helm/
+/.gradle/
 /.dcignore

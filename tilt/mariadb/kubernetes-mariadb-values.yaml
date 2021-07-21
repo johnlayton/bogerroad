@@ -1,0 +1,4 @@
+auth:
+  database: bulk-stream
+  username: "dbuser"
+  password: "dbpass"
