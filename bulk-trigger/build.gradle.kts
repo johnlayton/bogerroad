@@ -22,11 +22,16 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
     implementation("org.springframework.boot:spring-boot-starter-quartz")
+
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.data:spring-data-commons")
+
     implementation("org.mariadb.jdbc:mariadb-java-client:1.5.7")
+
     implementation("io.github.lognet:grpc-spring-boot-starter:4.5.0")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
     implementation("com.github.spullara.mustache.java:compiler:0.9.10")

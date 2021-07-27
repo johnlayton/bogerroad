@@ -175,6 +175,18 @@ data class Template(
         val text: String
 )
 
+@Entity
+@Table(name = "settlement")
+data class Settlement(
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    val id: String = UUID.randomUUID().toString(),
+)
+
 interface TemplateRepository : JpaRepository<Template, String>, JpaSpecificationExecutor<Template>
 
 @Configuration

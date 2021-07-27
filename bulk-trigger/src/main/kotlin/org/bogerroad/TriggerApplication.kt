@@ -3,28 +3,26 @@ package org.bogerroad
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import net.logstash.logback.argument.StructuredArguments.v
-import org.bogerroad.configuration.TriggerProperties
+import org.hibernate.annotations.GenericGenerator
 import org.quartz.Job
-import org.quartz.JobBuilder
 import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
-import org.quartz.SimpleTrigger
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.scheduling.quartz.SchedulerFactoryBean
-import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import java.io.Serializable
-import java.util.Date
-
-//import java.time.LocalDateTime.now
-
+import java.util.UUID
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
+import javax.persistence.Table
 
 @SpringBootApplication
 class TriggerApplication
@@ -42,41 +40,6 @@ data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constru
 ) : Serializable
 
 @Component
-class TemplateLoader(private val triggerProperties: TriggerProperties,
-                     private val schedulerFactoryBean: SchedulerFactoryBean
-) : CommandLineRunner {
-    override fun run(vararg args: String?) {
-        logger.info("=========================================================")
-        logger.info("Trigger Properties: {}", triggerProperties)
-        logger.info("=========================================================")
-
-
-        val jobDetail = JobBuilder.newJob(TriggerJob::class.java)
-            .withIdentity(triggerProperties.name, triggerProperties.name)
-            .usingJobData("title", triggerProperties.name)
-            .build()
-
-        val trigger = SimpleTriggerFactoryBean().let { trigger ->
-            trigger.setName(triggerProperties.name)
-            trigger.setStartTime(Date())
-            trigger.setRepeatInterval(10 * 1000)
-            trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY)
-            trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW)
-            trigger.afterPropertiesSet()
-            trigger.getObject()
-        }
-
-        schedulerFactoryBean.scheduler.scheduleJob(jobDetail, trigger)
-
-    }
-    companion object {
-        val logger: Logger by lazy {
-            LoggerFactory.getLogger(TemplateLoader::class.java)
-        }
-    }
-}
-
-@Component
 class TriggerJob(private val triggerService: TriggerService) : Job {
     @Throws(JobExecutionException::class)
     override fun execute(context: JobExecutionContext) {
@@ -85,7 +48,7 @@ class TriggerJob(private val triggerService: TriggerService) : Job {
 }
 
 @Service
-class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessage>) {
+class TriggerService(private val settlementRepository: SettlementRepository) {
     fun work(details: String) {
         val email = EmailMessage(
             firstName = "John",
@@ -94,10 +57,14 @@ class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessa
             mobile = "0410001000",
             message = "Hello John"
         )
+
         logger.info("=========================================================")
         logger.info("Trigger {} -> Send Email: {}", details, v("email", email))
         logger.info("=========================================================")
-        kafkaTemplate.send("topic1", email)
+
+
+//        settlementRepository.findByStatus()
+//        kafkaTemplate.send("topic1", email)
     }
 
     companion object {
@@ -106,6 +73,56 @@ class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessa
         }
     }
 }
+
+//@Component
+//class TemplateLoader(private val triggerProperties: TriggerProperties,
+//                     private val schedulerFactoryBean: SchedulerFactoryBean
+//) : CommandLineRunner {
+//    override fun run(vararg args: String?) {
+//        logger.info("=========================================================")
+//        logger.info("Trigger Properties: {}", triggerProperties)
+//        logger.info("=========================================================")
+//
+//
+////        val jobDetail = JobBuilder.newJob(TriggerJob::class.java)
+////            .withIdentity(triggerProperties.name, triggerProperties.name)
+////            .usingJobData("title", triggerProperties.name)
+////            .build()
+////
+////        val trigger = SimpleTriggerFactoryBean().let { trigger ->
+////            trigger.setName(triggerProperties.name)
+////            trigger.setStartTime(Date())
+////            trigger.setRepeatInterval(10 * 1000)
+////            trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY)
+////            trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW)
+////            trigger.afterPropertiesSet()
+////            trigger.getObject()
+////        }
+////
+////        schedulerFactoryBean.scheduler.scheduleJob(jobDetail, trigger)
+//
+//    }
+//    companion object {
+//        val logger: Logger by lazy {
+//            LoggerFactory.getLogger(TemplateLoader::class.java)
+//        }
+//    }
+//}
+
+@Entity
+@Table(name = "settlement")
+data class Settlement(
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    val id: String = UUID.randomUUID().toString(),
+)
+
+interface SettlementRepository : JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement>
+
 
 /*
 @Component
