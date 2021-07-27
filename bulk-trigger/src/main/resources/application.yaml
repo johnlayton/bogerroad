@@ -46,3 +46,10 @@ spring:
 
 trigger:
   name: New Name
+  locale: Europe/London
+  triggers:
+    -
+      name: Slot 1
+      cron: 0 40 8 ? * MON-FRI
+    -
+      na

@@ -59,7 +59,7 @@ class TemplateLoader(private val triggerProperties: TriggerProperties,
         val trigger = SimpleTriggerFactoryBean().let { trigger ->
             trigger.setName(triggerProperties.name)
             trigger.setStartTime(Date())
-            trigger.setRepeatInterval(60 * 1000)
+            trigger.setRepeatInterval(10 * 1000)
             trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY)
             trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW)
             trigger.afterPropertiesSet()
@@ -97,7 +97,6 @@ class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessa
         logger.info("=========================================================")
         logger.info("Trigger {} -> Send Email: {}", details, v("email", email))
         logger.info("=========================================================")
-
         kafkaTemplate.send("topic1", email)
     }
 
@@ -218,8 +217,6 @@ data class Template(
         val id: String = UUID.randomUUID().toString(),
         val text: String
 )
-
-interface TemplateRepository : JpaRepository<Template, String>, JpaSpecificationExecutor<Template>
 
 @Configuration
 class KafkaConfiguration(val kafkaAdmin: KafkaAdmin) {
