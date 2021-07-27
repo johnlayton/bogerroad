@@ -1,0 +1,5 @@
+${AnsiColor.BRIGHT_RED}
+=======================================
+== Bulk Trigger Application
+=======================================
+${AnsiColor.DEFAULT}

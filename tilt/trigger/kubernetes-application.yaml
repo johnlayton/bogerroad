@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-trigger
+  labels:
+    app: bulk-trigger
+spec:
+  selector:
+    matchLabels:
+      app: bulk-trigger
+  template:
+    metadata:
+      labels:
+        app: bulk-trigger
+    spec:
+      containers:
+      - name: bulk-trigger
+        image: bulk-trigger
+        ports:
+        - containerPort: 8080

@@ -2,67 +2,113 @@ package org.bogerroad
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.mustachejava.DefaultMustacheFactory
-import com.github.mustachejava.TemplateFunction
-import io.grpc.stub.StreamObserver
-import net.logstash.logback.argument.StructuredArguments.kv
 import net.logstash.logback.argument.StructuredArguments.v
-import org.apache.kafka.clients.admin.NewTopic
-import org.apache.kafka.clients.producer.ProducerConfig
-import org.hibernate.annotations.GenericGenerator
-import org.lognet.springboot.grpc.GRpcService
+import org.bogerroad.configuration.TriggerProperties
+import org.quartz.Job
+import org.quartz.JobBuilder
+import org.quartz.JobExecutionContext
+import org.quartz.JobExecutionException
+import org.quartz.SimpleTrigger
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.amqp.core.AmqpAdmin
-import org.springframework.amqp.core.AmqpTemplate
-import org.springframework.amqp.core.Binding
-import org.springframework.amqp.core.BindingBuilder
-import org.springframework.amqp.core.Exchange
-import org.springframework.amqp.core.ExchangeBuilder
-import org.springframework.amqp.core.QueueBuilder
-import org.springframework.amqp.rabbit.annotation.RabbitListener
-import org.springframework.amqp.support.converter.ClassMapper
-import org.springframework.amqp.support.converter.DefaultClassMapper
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
-import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor
-import org.springframework.data.web.JsonPath
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.config.TopicBuilder
-import org.springframework.kafka.core.DefaultKafkaProducerFactory
-import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.core.ProducerFactory
-import org.springframework.kafka.support.serializer.JsonSerializer
+import org.springframework.scheduling.quartz.SchedulerFactoryBean
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RestController
 import java.io.Serializable
-import java.io.StringReader
-import java.io.StringWriter
 import java.util.Date
-import java.util.Optional
-import java.util.UUID
-import javax.annotation.PostConstruct
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
-import javax.persistence.Table
+
+//import java.time.LocalDateTime.now
+
 
 @SpringBootApplication
-class GraalvmApplication
+class TriggerApplication
 
 fun main(args: Array<String>) {
-    runApplication<GraalvmApplication>(*args)
+    runApplication<TriggerApplication>(*args)
 }
 
+data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
+    @param:JsonProperty("firstName") val firstName: String,
+    @param:JsonProperty("lastName") val lastName: String,
+    @param:JsonProperty("email") val email: String,
+    @param:JsonProperty("mobile") val mobile: String,
+    @param:JsonProperty("message") val message: String
+) : Serializable
+
+@Component
+class TemplateLoader(private val triggerProperties: TriggerProperties,
+                     private val schedulerFactoryBean: SchedulerFactoryBean
+) : CommandLineRunner {
+    override fun run(vararg args: String?) {
+        logger.info("=========================================================")
+        logger.info("Trigger Properties: {}", triggerProperties)
+        logger.info("=========================================================")
+
+
+        val jobDetail = JobBuilder.newJob(TriggerJob::class.java)
+            .withIdentity(triggerProperties.name, triggerProperties.name)
+            .usingJobData("title", triggerProperties.name)
+            .build()
+
+        val trigger = SimpleTriggerFactoryBean().let { trigger ->
+            trigger.setName(triggerProperties.name)
+            trigger.setStartTime(Date())
+            trigger.setRepeatInterval(60 * 1000)
+            trigger.setRepeatCount(SimpleTrigger.REPEAT_INDEFINITELY)
+            trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_FIRE_NOW)
+            trigger.afterPropertiesSet()
+            trigger.getObject()
+        }
+
+        schedulerFactoryBean.scheduler.scheduleJob(jobDetail, trigger)
+
+    }
+    companion object {
+        val logger: Logger by lazy {
+            LoggerFactory.getLogger(TemplateLoader::class.java)
+        }
+    }
+}
+
+@Component
+class TriggerJob(private val triggerService: TriggerService) : Job {
+    @Throws(JobExecutionException::class)
+    override fun execute(context: JobExecutionContext) {
+        triggerService.work(context.jobDetail.jobDataMap.getString("title"))
+    }
+}
+
+@Service
+class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessage>) {
+    fun work(details: String) {
+        val email = EmailMessage(
+            firstName = "John",
+            lastName = "Layton",
+            email = "johnstewartlayton@gmail.com",
+            mobile = "0410001000",
+            message = "Hello John"
+        )
+        logger.info("=========================================================")
+        logger.info("Trigger {} -> Send Email: {}", details, v("email", email))
+        logger.info("=========================================================")
+
+        kafkaTemplate.send("topic1", email)
+    }
+
+    companion object {
+        val logger: Logger by lazy {
+            LoggerFactory.getLogger(TriggerService::class.java)
+        }
+    }
+}
+
+/*
 @Component
 class TemplateLoader(private val repository: TemplateRepository) : CommandLineRunner {
     override fun run(vararg args: String?) {
@@ -158,13 +204,7 @@ class MessageStreamService(
     }
 }
 
-data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
-        @param:JsonProperty("firstName") val firstName: String,
-        @param:JsonProperty("lastName") val lastName: String,
-        @param:JsonProperty("email") val email: String,
-        @param:JsonProperty("mobile") val mobile: String,
-        @param:JsonProperty("message") val message: String
-) : Serializable
+
 
 @Entity
 @Table(name = "template")
@@ -267,6 +307,7 @@ class RabbitComponent {
 
     }
 }
+*/
 
 @Component
 class KafkaComponent {

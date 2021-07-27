@@ -1,4 +1,4 @@
 auth:
-  database: bulk-application
+  database: bulk-trigger
   username: "dbuser"
   password: "dbpass"
