@@ -2,17 +2,21 @@
 
 load('ext://helm_remote', 'helm_remote')
 
-helm_remote('mariadb',
-            repo_name='bitnami',
-            repo_url='https://charts.bitnami.com/bitnami',
-            values='tilt/mariadb/kubernetes-mariadb-values.yaml')
-k8s_resource('mariadb', port_forwards=['3306:3306'])
+#helm_remote('mysql',
+#            repo_name='stable',
+#            repo_url='https://charts.helm.sh/stable')
 
-# stream_db = helm_remote('mariadb',
+# helm_remote('mariadb',
 #             repo_name='bitnami',
 #             repo_url='https://charts.bitnami.com/bitnami',
 #             values='tilt/mariadb/kubernetes-mariadb-values.yaml')
-# k8s_resource(stream_db, port_forwards=['3307:3306'])
+# k8s_resource('mariadb', port_forwards=['3306:3306'])
+
+helm_remote('postgresql',
+            repo_name='bitnami',
+            repo_url='https://charts.bitnami.com/bitnami',
+            values='tilt/postgresql/kubernetes-postgresql-values.yaml')
+k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 
 k8s_yaml('tilt/kafka/kubernetes-zookeeper.yaml')
 k8s_resource('zookeeper', port_forwards=['2181:2181'])

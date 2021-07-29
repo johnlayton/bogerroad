@@ -14,7 +14,10 @@ spec:
         app: bulk-trigger
     spec:
       containers:
-      - name: bulk-trigger
-        image: bulk-trigger
-        ports:
-        - containerPort: 8080
+        - name: bulk-trigger
+          image: bulk-trigger
+          ports:
+            - containerPort: 8080
+#          env:
+#            - name: SPRING_PROFILES_ACTIVE
+#              value: dev

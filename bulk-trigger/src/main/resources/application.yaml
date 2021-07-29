@@ -7,23 +7,16 @@ grpc:
 
 spring:
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://mariadb:3306/bulk-application
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgresql:5432/bulktrigger
     username: dbuser
     password: dbpass
-
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
     properties:
-      hibernate.dialect: org.hibernate.dialect.MariaDB103Dialect
-#  rabbitmq:
-#    username: guest
-#    password: guest
-#    addresses: amqp://rabbitmq:5672
-#    template:
-#      exchange: bulk-message-exchange
+      hibernate.dialect: org.hibernate.dialect.PostgreSQL94Dialect
   kafka:
     bootstrap-servers: kafka:9092
     consumer:
@@ -45,6 +38,16 @@ spring:
     job-store-type: jdbc
     jdbc:
       initialize-schema: always
+    properties:
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+
+quartz:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgresql:5432/bulktrigger
+    username: dbuser
+    password: dbpass
+#    type: SimpleDriverDataSource
 
 trigger:
   name: Settlement Triggers
@@ -52,9 +55,8 @@ trigger:
   triggers:
     - name: Slot 1
       cron: '0 40 8 ? * MON-FRI'
-    - name: Slot 2
-#      cron: '0 40 10 ? * MON-FRI'
-      time: '08:40'
+#    - name: Slot 2
+#      time: '08:40'
     - name: Slot 3
       cron: '0 28 15 ? * MON-FRI'
     - name: Slot 4

@@ -48,7 +48,7 @@ class TriggerJob(private val triggerService: TriggerService) : Job {
 }
 
 @Service
-class TriggerService(private val settlementRepository: SettlementRepository) {
+class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessage>) {
     fun work(details: String) {
         val email = EmailMessage(
             firstName = "John",
@@ -64,7 +64,7 @@ class TriggerService(private val settlementRepository: SettlementRepository) {
 
 
 //        settlementRepository.findByStatus()
-//        kafkaTemplate.send("topic1", email)
+        kafkaTemplate.send("topic1", email)
     }
 
     companion object {
@@ -109,19 +109,19 @@ class TriggerService(private val settlementRepository: SettlementRepository) {
 //    }
 //}
 
-@Entity
-@Table(name = "settlement")
-data class Settlement(
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-        name = "UUID",
-        strategy = "org.hibernate.id.UUIDGenerator"
-    )
-    val id: String = UUID.randomUUID().toString(),
-)
-
-interface SettlementRepository : JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement>
+//@Entity
+//@Table(name = "settlement")
+//data class Settlement(
+//    @Id
+//    @GeneratedValue(generator = "UUID")
+//    @GenericGenerator(
+//        name = "UUID",
+//        strategy = "org.hibernate.id.UUIDGenerator"
+//    )
+//    val id: String = UUID.randomUUID().toString(),
+//)
+//
+//interface SettlementRepository : JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement>
 
 
 /*

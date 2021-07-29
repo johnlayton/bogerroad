@@ -1,0 +1,23 @@
+global:
+  postgresql:
+    postgresqlUsername: dbuser
+    postgresqlPassword: dbpass
+postgresqlUsername: dbuser
+postgresqlPassword: dbpass
+initdbScripts:
+  debug.sh: |
+    #!/bin/sh
+    echo "Running the debug script"
+  init.sql: |
+    CREATE DATABASE bulktrigger;
+    GRANT ALL PRIVILEGES ON DATABASE bulktrigger TO dbuser;
+
+    CREATE DATABASE bulktriggerquartz;
+    GRANT ALL PRIVILEGES ON DATABASE bulktriggerquartz TO dbuser;
+
+    CREATE DATABASE bulkstream;
+    GRANT ALL PRIVILEGES ON DATABASE bulkstream TO dbuser;
+  complete.sh: |
+    #!/bin/sh
+    echo "Running the complete script"
+

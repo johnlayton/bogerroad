@@ -31,6 +31,7 @@ dependencies {
     implementation("org.springframework.data:spring-data-commons")
 
     implementation("org.mariadb.jdbc:mariadb-java-client:1.5.7")
+    implementation("org.postgresql:postgresql:42.2.18")
 
     implementation("io.github.lognet:grpc-spring-boot-starter:4.5.0")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
