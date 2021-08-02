@@ -68,7 +68,7 @@ class QuartzConfiguration {
     @Primary
     fun dataSource(dataSourceProperties: DataSourceProperties): DataSource {
         return dataSourceProperties.initializeDataSourceBuilder()
-            .type(HikariDataSource::class.java)
+//            .type(HikariDataSource::class.java)
             .build()
     }
 
@@ -82,7 +82,7 @@ class QuartzConfiguration {
     @QuartzDataSource
     fun quartzDataSource(quartzDataSourceProperties: DataSourceProperties): DataSource {
         return quartzDataSourceProperties.initializeDataSourceBuilder()
-            .type(HikariDataSource::class.java)
+//            .type(HikariDataSource::class.java)
             .build()
     }
 }
