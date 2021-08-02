@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.quartz.QuartzDataSource
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.boot.jdbc.DataSourceBuilder
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -67,21 +66,11 @@ class QuartzConfiguration {
 
     @Bean
     @Primary
-//    @ConfigurationProperties("spring.datasource")
     fun dataSource(dataSourceProperties: DataSourceProperties): DataSource {
         return dataSourceProperties.initializeDataSourceBuilder()
             .type(HikariDataSource::class.java)
             .build()
     }
-
-//    @Bean
-//    @Primary
-//    @ConfigurationProperties("spring.datasource")
-//    fun dataSource(): DataSource {
-//        return DataSourceBuilder.create().
-//
-//        build()
-//    }
 
     @Bean
     @ConfigurationProperties("quartz.datasource")
@@ -91,27 +80,13 @@ class QuartzConfiguration {
 
     @Bean
     @QuartzDataSource
-//    @ConfigurationProperties("quartz.datasource")
     fun quartzDataSource(quartzDataSourceProperties: DataSourceProperties): DataSource {
         return quartzDataSourceProperties.initializeDataSourceBuilder()
             .type(HikariDataSource::class.java)
             .build()
-//        return DataSourceBuilder.create().build()
-//        return quartzProperties.datasource.initializeDataSourceBuilder()
-//            .build();
-
-//        return DataSourceBuilder.derivedFrom(dataSource)
-//            .url(quartzProperties.datasource.url)
-//            .username(quartzProperties.datasource.username)
-//            .password(quartzProperties.datasource.password)
-//            .build()
-//            .type(SimpleDriverDataSource::class.java)
-//        return DataSourceBuilder.create()
-////            .type(SimpleDriverDataSource::class.java)
-//            .build()
     }
 }
-//
+
 @ConstructorBinding
 @ConfigurationProperties(prefix = "quartz")
 data class QuartzProperties(
@@ -119,22 +94,9 @@ data class QuartzProperties(
 ) {
     @ConstructorBinding
     data class QuartzConfigurationDataSource(
-        val driverClassName : String,
-        val url : String,
-        val username : String,
-        val password : String
+        val driverClassName: String,
+        val url: String,
+        val username: String,
+        val password: String
     )
-/*
-    ) {
-        fun initializeDataSourceBuilder(): DataSourceBuilder<*> {
-            return DataSourceBuilder
-                .create()
-//                .type(BasicDataSource::class.java)
-                .driverClassName(driverClassName)
-                .url(url)
-                .username(username)
-                .password(password)
-        }
-    }
-*/
 }
