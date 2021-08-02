@@ -5,6 +5,13 @@ grpc:
   enableReflection: true
   port: 6565
 
+quartz:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgresql:5432/bulktriggerquartz
+    username: dbuser
+    password: dbpass
+
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -33,21 +40,14 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     template:
       default-topic: topic1
-
   quartz:
     job-store-type: jdbc
+    auto-startup: true
     jdbc:
       initialize-schema: always
     properties:
       org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 
-quartz:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgresql:5432/bulktrigger
-    username: dbuser
-    password: dbpass
-#    type: SimpleDriverDataSource
 
 trigger:
   name: Settlement Triggers
@@ -66,3 +66,6 @@ trigger:
     - name: Slot 6
       cron: '0 * * * * ?'
 
+logging:
+  level:
+    org.quartz: DEBUG

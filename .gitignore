@@ -5,6 +5,7 @@
 /bulk-upload/src/main/resources/
 /bulk-upload/build/
 /bulk-trigger/build/
+/bulk-multi/build/
 /tilt_modules/
 /.idea/
 /.helm/

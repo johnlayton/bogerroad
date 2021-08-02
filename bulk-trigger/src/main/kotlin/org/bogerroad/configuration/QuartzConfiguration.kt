@@ -15,18 +15,24 @@ import javax.sql.DataSource
     QuartzProperties::class
 )
 class QuartzConfiguration {
-    @Bean
-//    @ConfigurationProperties("quartz.datasource")
+/*    @Bean(name = [ "quartzDataSource" ])
     @QuartzDataSource
-    fun quartzDataSource(quartzProperties: QuartzProperties): DataSource {
-        return quartzProperties.datasource.initializeDataSourceBuilder()
-            .type(SimpleDriverDataSource::class.java)
-            .build();
+    @ConfigurationProperties("quartz.datasource")
+    fun quartzDataSource(): DataSource {
+        return DataSourceBuilder.create().build()
+//        return quartzProperties.datasource.initializeDataSourceBuilder()
+//            .build();
 
+//        return DataSourceBuilder.derivedFrom(dataSource)
+//            .url(quartzProperties.datasource.url)
+//            .username(quartzProperties.datasource.username)
+//            .password(quartzProperties.datasource.password)
+//            .build()
+//            .type(SimpleDriverDataSource::class.java)
 //        return DataSourceBuilder.create()
 ////            .type(SimpleDriverDataSource::class.java)
 //            .build()
-    }
+    }*/
 }
 
 @ConstructorBinding
@@ -40,6 +46,8 @@ data class QuartzProperties(
         val url : String,
         val username : String,
         val password : String
+    )
+/*
     ) {
         fun initializeDataSourceBuilder(): DataSourceBuilder<*> {
             return DataSourceBuilder
@@ -51,6 +59,7 @@ data class QuartzProperties(
                 .password(password)
         }
     }
+*/
 }
 
 

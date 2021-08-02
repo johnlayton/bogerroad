@@ -9,8 +9,10 @@ import org.quartz.JobExecutionContext
 import org.quartz.JobExecutionException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.kafka.annotation.KafkaListener
@@ -23,6 +25,7 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
+import javax.sql.DataSource
 
 @SpringBootApplication
 class TriggerApplication
@@ -30,6 +33,39 @@ class TriggerApplication
 fun main(args: Array<String>) {
     runApplication<TriggerApplication>(*args)
 }
+
+@Configuration
+class LocalTriggerConfiguration(
+//    @Qualifier("primaryDataSource") private val primaryDataSource: DataSource,
+//    @Qualifier("quartzDataSource") private val quartzDataSource: DataSource
+) {
+    init {
+//        logger.info("Primary Datasource: ")
+//        logger.info(primaryDataSource.connection.metaData.url)
+//        logger.info("Quartz Datasource: ")
+//        logger.info(quartzDataSource.connection.metaData.url)
+    }
+
+    companion object {
+        val logger: Logger by lazy { LoggerFactory.getLogger(LocalTriggerConfiguration::class.java) }
+    }
+}
+
+//@Component
+//class SettlementLoader(private val repository: SettlementRepository) : CommandLineRunner {
+//    override fun run(vararg args: String?) {
+//        repository.save(Settlement())
+//
+////        listOf(
+////            Template(text = "Hello {{ name }}!"),
+////            Template(text = "Bonjour {{ name }}!"),
+////            Template(text = "Privet {{ name }}!"),
+////        ).forEach {
+////            repository.save(it)
+////        }
+//    }
+//}
+
 
 data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
     @param:JsonProperty("firstName") val firstName: String,
@@ -109,19 +145,19 @@ class TriggerService(private val kafkaTemplate: KafkaTemplate<String, EmailMessa
 //    }
 //}
 
-//@Entity
-//@Table(name = "settlement")
-//data class Settlement(
-//    @Id
-//    @GeneratedValue(generator = "UUID")
-//    @GenericGenerator(
-//        name = "UUID",
-//        strategy = "org.hibernate.id.UUIDGenerator"
-//    )
-//    val id: String = UUID.randomUUID().toString(),
-//)
-//
-//interface SettlementRepository : JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement>
+@Entity
+@Table(name = "settlement")
+data class Settlement(
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    val id: String = UUID.randomUUID().toString(),
+)
+
+interface SettlementRepository : JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement>
 
 
 /*

@@ -1,22 +1,36 @@
-global:
-  postgresql:
-    postgresqlUsername: dbuser
-    postgresqlPassword: dbpass
-postgresqlUsername: dbuser
-postgresqlPassword: dbpass
+#global:
+#  postgresql:
+#    postgresqlUsername: dbuser
+#    postgresqlPassword: dbpass
+postgresqlUsername: postgres
+postgresqlPassword: postgres
+initdbUser: postgres
 initdbScripts:
   debug.sh: |
     #!/bin/sh
     echo "Running the debug script"
   init.sql: |
-    CREATE DATABASE bulktrigger;
-    GRANT ALL PRIVILEGES ON DATABASE bulktrigger TO dbuser;
+    CREATE USER dbuser WITH PASSWORD 'dbpass';
 
-    CREATE DATABASE bulktriggerquartz;
-    GRANT ALL PRIVILEGES ON DATABASE bulktriggerquartz TO dbuser;
+    CREATE DATABASE bulk_trigger;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_trigger TO dbuser;
+    ALTER DATABASE bulk_trigger OWNER TO dbuser;
 
-    CREATE DATABASE bulkstream;
-    GRANT ALL PRIVILEGES ON DATABASE bulkstream TO dbuser;
+    CREATE DATABASE bulk_trigger_quartz;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_trigger_quartz TO dbuser;
+    ALTER DATABASE bulk_trigger_quartz OWNER TO dbuser;
+
+    CREATE DATABASE bulk_stream;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_stream TO dbuser;
+    ALTER DATABASE bulk_stream OWNER TO dbuser;
+
+    CREATE DATABASE bulk_multi_1;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_multi_1 TO dbuser;
+    ALTER DATABASE bulk_multi_1 OWNER TO dbuser;
+
+    CREATE DATABASE bulk_multi_2;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_multi_2 TO dbuser;
+    ALTER DATABASE bulk_multi_2 OWNER TO dbuser;
   complete.sh: |
     #!/bin/sh
     echo "Running the complete script"
