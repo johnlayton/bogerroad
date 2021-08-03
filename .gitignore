@@ -11,3 +11,4 @@
 /.helm/
 /.gradle/
 /.dcignore
+.kenv-machine

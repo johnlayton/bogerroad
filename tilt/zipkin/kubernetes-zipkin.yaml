@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zipkin
+  name: zipkin
+spec:
+  selector:
+    matchLabels:
+      app: zipkin
+  template:
+    metadata:
+      labels:
+        app: zipkin
+      annotations:
+        prometheus.io/scrape: 'false'
+        sidecar.istio.io/inject: 'false'
+    spec:
+      containers:
+        - image: openzipkin/zipkin:2.23
+          imagePullPolicy: IfNotPresent
+          name: zipkin
+          ports:
+            - containerPort: 9411
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zipkin
+  name: zipkin
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 9411
+      targetPort: 9411
+  selector:
+    app: zipkin
