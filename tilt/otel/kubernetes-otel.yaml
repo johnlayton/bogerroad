@@ -16,7 +16,7 @@ data:
         endpoint: "jaeger-collector:14267"
         insecure: true
       zipkin:
-        endpoint: "http://jaeger-collector:9411/api/v2/spans"
+        endpoint: "http://zipkin:9411/api/v2/spans"
         format: proto
     service:
       pipelines:
