@@ -40,7 +40,7 @@ data class Settlement(
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = UUID.randomUUID().toString()
 )
 
 interface SettlementRepository : JpaRepository<Settlement, String>, JpaSpecificationExecutor<Settlement>
