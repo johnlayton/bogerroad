@@ -74,9 +74,9 @@ metadata:
     app: otel
   name: otel
 spec:
-  type: NodePort
   ports:
     - name: otel
+      protocol: TCP
       port: 4317
       targetPort: 4317
   selector:

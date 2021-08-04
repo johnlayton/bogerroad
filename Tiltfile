@@ -23,14 +23,17 @@ load('ext://helm_remote', 'helm_remote')
 #             repo_url='https://jaegertracing.github.io/helm-charts')
 # k8s_resource(workload='jaeger', port_forwards=['5432:5432'])
 
-# k8s_yaml('tilt/zipkin/kubernetes-zipkin.yaml')
-# k8s_resource('zipkin', port_forwards=['9411:9411'])
+k8s_yaml('tilt/zipkin/kubernetes-zipkin.yaml')
+k8s_resource('zipkin', port_forwards=['9411:9411'])
 
-k8s_yaml('tilt/jaeger/kubernetes-jaeger.yaml')
-k8s_resource('jaeger', port_forwards=['9411:9411', '16686:16686'])
+# k8s_yaml('tilt/jaeger/kubernetes-jaeger.yaml')
+# k8s_resource('jaeger', port_forwards=['9411:9411', '16686:16686'])
 
 k8s_yaml('tilt/otel/kubernetes-otel.yaml')
 k8s_resource('otel', port_forwards=['4317:4317'])
+
+# k8s_yaml('tilt/otel/kubernetes-otel-demo.yaml')
+# k8s_resource('otel', port_forwards=['4317:4317','9411:9411', '16686:16686'])
 
 
 # k8s_yaml('tilt/kafka/kubernetes-zookeeper.yaml')
