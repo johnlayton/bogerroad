@@ -7,6 +7,9 @@ metadata:
     app.kubernetes.io/name: jaeger
     app.kubernetes.io/component: all-in-one
 spec:
+  replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: jaeger
@@ -21,7 +24,7 @@ spec:
         prometheus.io/port: "16686"
     spec:
       containers:
-        - image: jaegertracing/all-in-one:1.24.0
+        - image: jaegertracing/all-in-one
           name: jaeger
           env:
             - name: COLLECTOR_ZIPKIN_HTTP_PORT
@@ -37,12 +40,6 @@ spec:
               protocol: TCP
             - containerPort: 16686
               protocol: TCP
-            - containerPort: 14250
-              protocol: TCP
-            - containerPort: 14267
-              protocol: TCP
-            - containerPort: 14268
-              protocol: TCP
             - containerPort: 9411
               protocol: TCP
           readinessProbe:
@@ -54,13 +51,58 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: jaeger
+  name: jaeger-query
   labels:
     app: jaeger
     app.kubernetes.io/name: jaeger
-    app.kubernetes.io/component: all-in-one
+    app.kubernetes.io/component: query
 spec:
+  ports:
+    - name: query-http
+      port: 16686
+      protocol: TCP
+      targetPort: 16686
+  selector:
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: all-in-one
   type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector
+  labels:
+    app: jaeger
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: collector
+spec:
+  ports:
+    - name: jaeger-collector-tchannel
+      port: 14267
+      protocol: TCP
+      targetPort: 14267
+    - name: jaeger-collector-http
+      port: 14268
+      protocol: TCP
+      targetPort: 14268
+    - name: jaeger-collector-zipkin
+      port: 9411
+      protocol: TCP
+      targetPort: 9411
+  selector:
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: all-in-one
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-agent
+  labels:
+    app: jaeger
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: agent
+spec:
   ports:
     - name: agent-zipkin-thrift
       port: 5775
@@ -78,30 +120,28 @@ spec:
       port: 5778
       protocol: TCP
       targetPort: 5778
-    - name: query-http
-      port: 16686
-      protocol: TCP
-      targetPort: 16686
-    - name: jaeger-collector
-      port: 14250
-      protocol: TCP
-      targetPort: 14250
-    - name: jaeger-collector-tchannel
-      port: 14267
-      protocol: TCP
-      targetPort: 14267
-    - name: jaeger-collector-http
-      port: 14268
-      protocol: TCP
-      targetPort: 14268
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: all-in-one
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zipkin
+  labels:
+    app: jaeger
+    app.kubernetes.io/name: jaeger
+    app.kubernetes.io/component: zipkin
+spec:
+  type: NodePort
+  ports:
     - name: jaeger-collector-zipkin
       port: 9411
       protocol: TCP
       targetPort: 9411
+#  clusterIP: None
   selector:
-    app: jaeger
     app.kubernetes.io/name: jaeger
     app.kubernetes.io/component: all-in-one
-#  type: NodePort
-
 

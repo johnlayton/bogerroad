@@ -13,10 +13,11 @@ data:
       logging:
         logLevel: debug
       jaeger:
-        endpoint: "jaeger-collector:14267"
+        endpoint: "jaeger:14250"
         insecure: true
       zipkin:
-        endpoint: "http://jaeger-collector:9411/api/v2/spans"
+        endpoint: "http://jaeger:9411/api/v2/spans"
+        insecure: true
         format: proto
     service:
       pipelines:
