@@ -53,10 +53,7 @@ class SettlementLoader(private val repository: SettlementRepository) : CommandLi
 }
 
 @Configuration
-@EnableConfigurationProperties(
-    QuartzProperties::class
-)
-class QuartzConfiguration {
+class AppConfiguration {
 
     @Bean
     @ConfigurationProperties("spring.datasource")
@@ -67,10 +64,26 @@ class QuartzConfiguration {
     @Bean
     @Primary
     fun dataSource(dataSourceProperties: DataSourceProperties): DataSource {
-        return dataSourceProperties.initializeDataSourceBuilder()
-//            .type(HikariDataSource::class.java)
-            .build()
+
+        logger.info("---------------------------------------------------------------------------------")
+        logger.info("Create App Datasource with URL {}", dataSourceProperties.url)
+        logger.info("---------------------------------------------------------------------------------")
+
+        return dataSourceProperties.initializeDataSourceBuilder().build()
     }
+
+    companion object {
+        val logger: Logger by lazy { LoggerFactory.getLogger(AppConfiguration::class.java) }
+    }
+}
+
+/*
+@EnableConfigurationProperties(
+    QuartzProperties::class
+)
+*/
+@Configuration
+class QuartzConfiguration {
 
     @Bean
     @ConfigurationProperties("quartz.datasource")
@@ -81,22 +94,15 @@ class QuartzConfiguration {
     @Bean
     @QuartzDataSource
     fun quartzDataSource(quartzDataSourceProperties: DataSourceProperties): DataSource {
-        return quartzDataSourceProperties.initializeDataSourceBuilder()
-//            .type(HikariDataSource::class.java)
-            .build()
-    }
-}
 
-@ConstructorBinding
-@ConfigurationProperties(prefix = "quartz")
-data class QuartzProperties(
-    val datasource: QuartzConfigurationDataSource
-) {
-    @ConstructorBinding
-    data class QuartzConfigurationDataSource(
-        val driverClassName: String,
-        val url: String,
-        val username: String,
-        val password: String
-    )
+        AppConfiguration.logger.info("---------------------------------------------------------------------------------")
+        AppConfiguration.logger.info("Create Quartz Datasource with URL {}", quartzDataSourceProperties.url)
+        AppConfiguration.logger.info("---------------------------------------------------------------------------------")
+
+        return quartzDataSourceProperties.initializeDataSourceBuilder().build()
+    }
+
+    companion object {
+        val logger: Logger by lazy { LoggerFactory.getLogger(QuartzConfiguration::class.java) }
+    }
 }

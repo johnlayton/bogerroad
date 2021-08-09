@@ -1,13 +1,6 @@
 server:
   port: 8080
 
-quartz:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgresql:5432/bulk_multi_2
-    username: dbuser
-    password: dbpass
-
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -25,6 +18,11 @@ spring:
     auto-startup: true
     jdbc:
       initialize-schema: always
+    datasource:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://postgresql:5432/bulk_multi_2
+      username: dbuser
+      password: dbpass
     properties:
       org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
 
