@@ -12,11 +12,11 @@ load('ext://helm_remote', 'helm_remote')
 #             values='tilt/mariadb/kubernetes-mariadb-values.yaml')
 # k8s_resource('mariadb', port_forwards=['3306:3306'])
 
-# helm_remote('postgresql',
-#             repo_name='bitnami',
-#             repo_url='https://charts.bitnami.com/bitnami',
-#             values='tilt/postgresql/kubernetes-postgresql-values.yaml')
-# k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
+helm_remote('postgresql',
+            repo_name='bitnami',
+            repo_url='https://charts.bitnami.com/bitnami',
+            values='tilt/postgresql/kubernetes-postgresql-values.yaml')
+k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 
 # helm_remote('jaeger',
 #             repo_name='jaegertracing',
