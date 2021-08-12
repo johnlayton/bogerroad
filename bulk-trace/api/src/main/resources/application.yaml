@@ -1,0 +1,93 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: trace-api
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      bootstrap-servers: kafka:9092
+      group-id: group_id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "org.bogerroad"
+    producer:
+      bootstrap-servers: kafka:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    template:
+      default-topic: bulk-trace-topic-1
+  sleuth:
+    enabled: true
+    baggage:
+      correlation-enabled: true
+      correlation-fields:
+        - "X-Amzn-Trace-Id"
+      remote-fields:
+        - "X-Amzn-Trace-Id"
+      tag-fields:
+        - "X-Amzn-Trace-Id"
+    propagation:
+      type: AWS
+    sampler:
+      probability: 1.0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      enabled: true
+    health:
+      show-components: always
+      show-details: always
+  health:
+    db:
+      enabled: true
+  info:
+    git:
+      mode: simple
+
+springdoc:
+  show-actuator: false
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    org.springframework.cloud.sleuth: DEBUG
+    io.opentelemetry.exporter.otlp.trace: DEBUG
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: zipkin
+
+  zipkin:
+    base-url: http://zipkin:9411
+    enabled: true
+    sender:
+      type: web
+    encoder: json_v1
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: otel
+  sleuth:
+    otel:
+      exporter:
+        otlp:
+          endpoint: "http://otel:4317"
+      config:
+        trace-id-ratio-based: 1.0
+
