@@ -11,12 +11,21 @@ plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.google.protobuf") version "0.8.16"
     kotlin("jvm") version "1.5.10"
-    kotlin("plugin.spring") version "1.5.10"
-    kotlin("plugin.jpa") version "1.5.10"
+    kotlin("plugin.spring") version "1.5.21"
+    kotlin("plugin.jpa") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.20"
 }
+
+/*
+java {
+    targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+    sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+}
+*/
 
 repositories {
     maven("https://repo.spring.io/release")
+    maven("https://packages.confluent.io/maven/")
     mavenCentral()
 }
 
@@ -27,11 +36,14 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.data:spring-data-commons")
     implementation("org.mariadb.jdbc:mariadb-java-client:1.5.7")
+    implementation("org.postgresql:postgresql:42.2.18")
     implementation("io.github.lognet:grpc-spring-boot-starter:4.5.0")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
     implementation("com.github.spullara.mustache.java:compiler:0.9.10")
     implementation("com.jayway.jsonpath:json-path")
     implementation(kotlin("reflect"))
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+    implementation("com.github.thake.avro4k:avro4k-kafka-serializer:0.13.0")
 //    implementation("com.h2database:h2")
 }
 

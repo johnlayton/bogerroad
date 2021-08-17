@@ -6,6 +6,8 @@
 /bulk-upload/build/
 /bulk-trigger/build/
 /bulk-multi/build/
+/bulk-trace/api/build/
+/bulk-trace/api/.gradle
 /tilt_modules/
 /.idea/
 /.helm/

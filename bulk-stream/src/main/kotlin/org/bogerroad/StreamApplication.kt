@@ -1,14 +1,18 @@
 package org.bogerroad
 
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.TemplateFunction
+import com.github.thake.kafka.avro4k.serializer.KafkaAvro4kSerializer
 import io.grpc.stub.StreamObserver
 import net.logstash.logback.argument.StructuredArguments.kv
 import net.logstash.logback.argument.StructuredArguments.v
 import org.apache.kafka.clients.admin.NewTopic
+import org.apache.kafka.common.serialization.Deserializer
 import org.hibernate.annotations.GenericGenerator
 import org.lognet.springboot.grpc.GRpcService
 import org.slf4j.LoggerFactory
@@ -40,7 +44,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import java.io.Serializable
+//import java.io.Serializable
 import java.io.StringReader
 import java.io.StringWriter
 import java.util.Date
@@ -154,6 +158,7 @@ class MessageStreamService(
     }
 }
 
+/*
 data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
         @param:JsonProperty("firstName") val firstName: String,
         @param:JsonProperty("lastName") val lastName: String,
@@ -161,6 +166,16 @@ data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constru
         @param:JsonProperty("mobile") val mobile: String,
         @param:JsonProperty("message") val message: String
 ) : Serializable
+*/
+
+@Serializable
+data class EmailMessage(
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val mobile: String,
+    val message: String
+)
 
 @Entity
 @Table(name = "template")

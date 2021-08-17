@@ -28,34 +28,34 @@ k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 # helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
 
 
-k8s_yaml('tilt/jaeger/kubernetes-jaeger.yaml')
-k8s_resource('jaeger', port_forwards=['16686:16686','9411:9411'])
-
-k8s_yaml('tilt/otel/kubernetes-otel.yaml')
-k8s_resource('otel', port_forwards=['4317:4317'])
+# k8s_yaml('tilt/jaeger/kubernetes-jaeger.yaml')
+# k8s_resource('jaeger', port_forwards=['16686:16686','9411:9411'])
+#
+# k8s_yaml('tilt/otel/kubernetes-otel.yaml')
+# k8s_resource('otel', port_forwards=['4317:4317'])
 
 # k8s_yaml('tilt/otel/kubernetes-otel-demo.yaml')
 # k8s_resource('otel', port_forwards=['4317:4317','9411:9411', '16686:16686'])
 
 
-# k8s_yaml('tilt/kafka/kubernetes-zookeeper.yaml')
-# k8s_resource('zookeeper', port_forwards=['2181:2181'])
-#
-# k8s_yaml('tilt/kafka/kubernetes-kafka.yaml')
-# k8s_resource('kafka', port_forwards=['9092'])
-#
-# k8s_yaml('tilt/kafka/kubernetes-kafka-manager.yaml')
-# k8s_resource('kafka-manager', port_forwards=['9000', '9999'])
+k8s_yaml('tilt/kafka/kubernetes-zookeeper.yaml')
+k8s_resource('zookeeper', port_forwards=['2181:2181'])
 
-# k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
-# k8s_resource('rabbitmq', port_forwards='15672')
+k8s_yaml('tilt/kafka/kubernetes-kafka.yaml')
+k8s_resource('kafka', port_forwards=['9092'])
 
-# custom_build('bulk-stream',
-#     'cd bulk-stream && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
-#     deps=['bulk-stream/src'])
-#
-# k8s_yaml('tilt/stream/kubernetes-application.yaml')
-# k8s_resource('bulk-stream', port_forwards=['6565:6565', '8080:8080'])
+k8s_yaml('tilt/kafka/kubernetes-kafka-manager.yaml')
+k8s_resource('kafka-manager', port_forwards=['9000', '9999'])
+
+k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
+k8s_resource('rabbitmq', port_forwards='15672')
+
+custom_build('bulk-stream',
+    'cd bulk-stream && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
+    deps=['bulk-stream/src'])
+
+k8s_yaml('tilt/stream/kubernetes-application.yaml')
+k8s_resource('bulk-stream', port_forwards=['6565:6565', '8080:8080'])
 
 # custom_build('bulk-trigger',
 #     'cd bulk-trigger && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
