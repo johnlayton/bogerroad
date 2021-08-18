@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.TemplateFunction
-import com.github.thake.kafka.avro4k.serializer.KafkaAvro4kSerializer
 import io.grpc.stub.StreamObserver
 import net.logstash.logback.argument.StructuredArguments.kv
 import net.logstash.logback.argument.StructuredArguments.v
@@ -55,6 +54,9 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
+import kotlinx.serialization.Serializer as Serializer
+import org.apache.kafka.common.serialization.Serializer as KafkaSerializer
+import org.apache.kafka.common.serialization.Deserializer as KafkaDeserializer
 
 @SpringBootApplication
 class StreamApplication
@@ -303,3 +305,17 @@ class KafkaComponent {
         logger.info("=========================================================")
     }
 }
+
+class EmailMessageSerializer : KafkaSerializer<EmailMessage>, KafkaDeserializer<EmailMessage> {
+    override fun serialize(topic: String, data: EmailMessage): ByteArray {
+        return Json.encodeToString(data).encodeToByteArray()
+    }
+
+    override fun deserialize(topic: String, data: ByteArray): EmailMessage {
+        return Json.decodeFromString(data.decodeToString())
+    }
+
+    override fun close() {}
+    override fun configure(configs: MutableMap<String, *>, isKey: Boolean) {}
+}
+
