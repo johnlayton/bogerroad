@@ -68,10 +68,10 @@ k8s_resource('bulk-stream', port_forwards=['6565:6565', '8080:8080'])
 # k8s_yaml('tilt/trigger/kubernetes-application.yaml')
 # k8s_resource('bulk-trigger', port_forwards=['8081:8080'])
 
-# custom_build('bulk-trace-api',
-#     'cd bulk-trace/api && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
-#     deps=['bulk-trace/ap/src'])
-#
-# # pack('bulk-trace-api', path = "bulk-trace/api")
-# k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
-# k8s_resource('bulk-trace-api', port_forwards=8080)
+custom_build('bulk-trace-api',
+    'cd bulk-trace/api && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
+    deps=['bulk-trace/ap/src'])
+
+# pack('bulk-trace-api', path = "bulk-trace/api")
+k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
+k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])

@@ -71,12 +71,12 @@ interface ApiResource {
     fun index(@RequestHeader("X-Amzn-Trace-Id") traceId: String): ApiMessage
 }
 
+@Component
 class ApiResourceImpl(private val apiService: ApiService) : ApiResource {
 
     @NewSpan("get-by-id")
     override fun get(@PathVariable("id") id : String) : ApiMessage = ApiMessage("Got by Id : $id")
 
-    @GetMapping
     override fun index(@RequestHeader("X-Amzn-Trace-Id") traceId: String): ApiMessage {
         logger.info("=========================================================")
         logger.info("Call to API {}", v("traceId", traceId))
@@ -88,15 +88,6 @@ class ApiResourceImpl(private val apiService: ApiService) : ApiResource {
         val logger: Logger by lazy { LoggerFactory.getLogger(ApiResource::class.java) }
     }
 }
-
-
-
-//@RestController
-//@RequestMapping("api")
-//class ApiResource() {
-//    @Operation
-//    fun get() : Response = Response()
-//}
 
 @Service
 class ApiService(private val kafkaTemplate: KafkaTemplate<String, ApiMessage>) {

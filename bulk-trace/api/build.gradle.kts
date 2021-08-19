@@ -2,10 +2,17 @@ plugins {
     id("java")
     id("org.springframework.boot") version "2.5.3"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("com.github.johnrengelman.processes") version "0.5.0"
-    id("org.springdoc.openapi-gradle-plugin") version "1.3.2"
+
+//    id("com.github.johnrengelman.processes") version "0.5.0"
+//    id("org.springdoc.openapi-gradle-plugin") version "1.3.2"
+
     kotlin("jvm") version "1.5.10"
     kotlin("plugin.spring") version "1.5.10"
+}
+
+java {
+    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_11
 }
 
 repositories {
@@ -46,8 +53,10 @@ dependencyManagement {
     }
 }
 
+/*
 openApi {
     outputFileName.set("openapi.yaml")
     apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")
 //    forkProperties = "-Dspring.profiles.active=zipking"
 }
+*/
