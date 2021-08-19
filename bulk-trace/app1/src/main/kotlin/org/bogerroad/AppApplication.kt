@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.io.Serializable
 
 @SpringBootApplication
-class ApiApplication
+class AppApplication
 
 fun main(args: Array<String>) {
     runApplication<ApiApplication>(*args)
@@ -50,7 +50,8 @@ class ApiDefinition
 
 @RestController
 @RequestMapping("api")
-interface ApiResource {
+class ApiResource(private val apiService: ApiService) {
+
     @GetMapping(value = ["/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     @ResponseStatus(HttpStatus.OK)
     @Operation(
@@ -64,20 +65,11 @@ interface ApiResource {
             ]
         )]
     )
-    fun get(@PathVariable("id") id : String) : ApiMessage
-
-    @GetMapping
-    @Operation
-    fun index(@RequestHeader("X-Amzn-Trace-Id") traceId: String): ApiMessage
-}
-
-class ApiResourceImpl(private val apiService: ApiService) : ApiResource {
-
     @NewSpan("get-by-id")
-    override fun get(@PathVariable("id") id : String) : ApiMessage = ApiMessage("Got by Id : $id")
+    fun get(@PathVariable("id") id : String) : ApiMessage = ApiMessage("Got by Id : $id")
 
     @GetMapping
-    override fun index(@RequestHeader("X-Amzn-Trace-Id") traceId: String): ApiMessage {
+    fun index(@RequestHeader("X-Amzn-Trace-Id") traceId: String): ApiMessage {
         logger.info("=========================================================")
         logger.info("Call to API {}", v("traceId", traceId))
         logger.info("=========================================================")
@@ -88,15 +80,6 @@ class ApiResourceImpl(private val apiService: ApiService) : ApiResource {
         val logger: Logger by lazy { LoggerFactory.getLogger(ApiResource::class.java) }
     }
 }
-
-
-
-//@RestController
-//@RequestMapping("api")
-//class ApiResource() {
-//    @Operation
-//    fun get() : Response = Response()
-//}
 
 @Service
 class ApiService(private val kafkaTemplate: KafkaTemplate<String, ApiMessage>) {

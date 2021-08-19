@@ -5,6 +5,8 @@ metadata:
 data:
   collector.yaml: |
     receivers:
+      zipkin:
+        endpoint: "0.0.0.0:9412"
       otlp:
         protocols:
           grpc:
@@ -16,18 +18,18 @@ data:
         endpoint: "jaeger:14250"
         insecure: true
       zipkin:
-        endpoint: "http://jaeger:9411/api/v2/spans"
+        endpoint: "http://zipkin:9411/api/v2/spans"
         insecure: true
-        format: proto
+        format: json
     service:
       pipelines:
         traces:
           receivers:
             - otlp
+            - zipkin
           processors:
           exporters:
             - logging
-            - jaeger
             - zipkin
 ---
 apiVersion: apps/v1
@@ -80,5 +82,9 @@ spec:
       protocol: TCP
       port: 4317
       targetPort: 4317
+    - name: zipkin
+      protocol: TCP
+      port: 9412
+      targetPort: 9412
   selector:
     app: otel

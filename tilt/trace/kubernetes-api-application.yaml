@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-trace-api
+  labels:
+    app: bulk-trace-api
+spec:
+  selector:
+    matchLabels:
+      app: bulk-trace-api
+  template:
+    metadata:
+      labels:
+        app: bulk-trace-api
+    spec:
+      containers:
+      - name: bulk-trace-api
+        image: bulk-trace-api
+        ports:
+        - containerPort: 8080
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: zipkin

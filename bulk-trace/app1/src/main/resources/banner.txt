@@ -1,0 +1,5 @@
+${AnsiColor.BRIGHT_RED}
+=======================================
+== Bulk Trace App 1 Application
+=======================================
+${AnsiColor.DEFAULT}
