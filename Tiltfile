@@ -54,9 +54,6 @@ k8s_resource('kafka-manager', port_forwards=['9000', '9999'])
 k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
 k8s_resource('rabbitmq', port_forwards='15672')
 
-k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
-k8s_resource('rabbitmq', port_forwards='15672')
-
 custom_build('bulk-stream',
     'cd bulk-stream && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
     deps=['bulk-stream/src'])
