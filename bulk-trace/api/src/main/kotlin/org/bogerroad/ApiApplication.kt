@@ -2,31 +2,39 @@ package org.bogerroad
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonValue
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.extensions.Extension
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.servers.Server
+import net.logstash.logback.argument.StructuredArguments.kv
 import net.logstash.logback.argument.StructuredArguments.v
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.cloud.sleuth.annotation.NewSpan
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.core.KafkaTemplate
+//import org.springframework.cloud.sleuth.annotation.NewSpan
+//import org.springframework.http.HttpStatus
+//import org.springframework.http.MediaType
+//import org.springframework.kafka.annotation.KafkaListener
+//import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.io.Serializable
+import java.util.UUID
+import javax.validation.Valid
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
 
 @SpringBootApplication
 class ApiApplication
@@ -35,20 +43,75 @@ fun main(args: Array<String>) {
     runApplication<ApiApplication>(*args)
 }
 
+// These can come from spring build info (properties generated at build time -
+// including git info!) - Next Demo
 @OpenAPIDefinition(
     info = Info(
-        title = "**The Title Is Missing",
-        description = "**The Description Is Missing",
-        version = "**The Version Is Missing"
+        title = "Workspace Service",
+        description = "This is the Workspace service where one can create, update, get detail, list and search for workspaces.",
+        version = " 1.0.0"
     ),
     servers = [
-        Server(description = "localhost", url = "http://localhost:8080")
+        Server(description = "localhost - 1", url = "http://localhost:8080"),
+        Server(description = "localhost - 2", url = "http://localhost:8081")
     ]
 )
 @Component
 class ApiDefinition
 
 @RestController
+@RequestMapping("/api/v1/workspaces")
+interface WorkspaceResource {
+
+    @PostMapping
+    @Operation(
+        description = "blah blah"
+    )
+    fun createWorkspace(@RequestHeader("X-Subscriber-ID") subscriberId: String,  @Valid @RequestBody workspace : Workspace) : WorkspaceResponse = WorkspaceResponse(UUID.randomUUID())
+
+}
+
+@Service
+class WorkspaceResourceImpl : WorkspaceResource {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    override fun createWorkspace(subscriberId: String, workspace : Workspace) : WorkspaceResponse {
+        logger.info("Workspace created {}", kv("workspace", workspace, workspace.mortgageApplicationReference))
+        return WorkspaceResponse(UUID.randomUUID())
+    }
+}
+
+data class Workspace (
+    val transactionType : TransactionType,
+    val jurisdiction: Jurisdiction,
+    val securityAddress: SecurityAddress,
+    @field:NotBlank @field:Size(min = 0, max = 30) val mortgageApplicationReference: String
+)
+
+enum class TransactionType(val code: String) {
+    REMORTGAGE("REMORTGAGE"),
+    NEW_PURCHASE("NEW_PURCHASE")
+}
+
+enum class Jurisdiction(val code: String)  {
+    ENGLAND_WALES("ENGLAND_WALES")
+}
+
+data class WorkspaceResponse(
+    val workspaceId: UUID
+)
+
+data class SecurityAddress(
+    val postcode: String,
+    val name: String? = null,
+    val number: String? = null,
+    val flat: String? = null,
+    val street: String? = null,
+    val town: String? = null
+)
+
+/*@RestController
 @RequestMapping("api")
 interface ApiResource {
     @GetMapping(value = ["/{id}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -87,8 +150,9 @@ class ApiResourceImpl(private val apiService: ApiService) : ApiResource {
     companion object {
         val logger: Logger by lazy { LoggerFactory.getLogger(ApiResource::class.java) }
     }
-}
+}*/
 
+/*
 @Service
 class ApiService(private val kafkaTemplate: KafkaTemplate<String, ApiMessage>) {
     fun message(): ApiMessage {
@@ -114,4 +178,5 @@ class ApiListener {
 data class ApiMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
     @param:JsonProperty("message") val message: String
 ) : Serializable
+*/
 
