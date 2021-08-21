@@ -5,6 +5,10 @@ plugins {
 
     id("com.github.johnrengelman.processes") version "0.5.0"
     id("org.springdoc.openapi-gradle-plugin") version "1.3.2"
+    id("com.gorylenko.gradle-git-properties") version "2.3.1"
+
+//	id("com.palantir.git-version") version "0.12.3"
+    id("fr.brouillard.oss.gradle.jgitver") version "0.10.0-rc03"
 
     kotlin("jvm") version "1.5.10"
     kotlin("plugin.spring") version "1.5.10"
@@ -63,3 +67,10 @@ openApi {
 //    forkProperties = "-Dspring.profiles.active=zipking"
 }
 
+springBoot {
+    buildInfo()
+}
+
+jgitver {
+    strategy = fr.brouillard.oss.jgitver.Strategies.MAVEN
+}

@@ -9,12 +9,21 @@ import io.swagger.v3.oas.annotations.extensions.Extension
 import io.swagger.v3.oas.annotations.extensions.ExtensionProperty
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.servers.Server
+import io.swagger.v3.oas.models.tags.Tag
 import net.logstash.logback.argument.StructuredArguments.kv
 import net.logstash.logback.argument.StructuredArguments.v
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springdoc.core.customizers.OpenApiCustomiser
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.info.BuildProperties
+import org.springframework.boot.info.GitProperties
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 //import org.springframework.cloud.sleuth.annotation.NewSpan
 //import org.springframework.http.HttpStatus
 //import org.springframework.http.MediaType
@@ -109,6 +118,34 @@ data class SecurityAddress(
     val flat: String? = null,
     val street: String? = null,
     val town: String? = null
+)
+
+@Configuration
+@EnableConfigurationProperties(ApiProperties::class)
+class ApiConfiguration(
+    private val buildProperties: BuildProperties,
+    private val gitProperties: GitProperties
+) {
+
+    @Bean
+    fun openApiCustomiser(apiProperties: ApiProperties): OpenApiCustomiser {
+        return OpenApiCustomiser {
+            it.info.title = apiProperties.title
+            it.info.version = buildProperties.version
+            it.tags = listOf(
+                Tag().also {
+                    it.name = "commit"
+                    it.description = gitProperties.commitId
+                }) + it.tags.orEmpty()
+        }
+    }
+
+}
+
+@ConstructorBinding
+@ConfigurationProperties(prefix = "bulk.openapi")
+data class ApiProperties(
+    val title: String
 )
 
 /*@RestController
