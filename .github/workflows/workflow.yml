@@ -23,6 +23,12 @@ jobs:
       - name: Gradle Build
         uses: gradle/gradle-build-action@v1
         with:
-          arguments: clean build
+          arguments: clean build generateOpenApiDocs
           build-root-directory: bulk-trace/api
 
+      - name: Publish OpenApi
+        uses: actions/upload-artifact@v2
+        with:
+           name: OpenApi-Specs
+           path: |
+             bulk-trace/api/build/openapi.yaml
