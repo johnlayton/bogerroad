@@ -8,4 +8,5 @@ spec:
   type: other
   lifecycle: unknown
   definition:
-    $text: https://johnlayton.github.io/bogerroad/openapi.yaml
+    $text: https://github.com/johnlayton/bogerroad/blob/gh-pages/openapi.yaml
+    # https://johnlayton.github.io/bogerroad/openapi.yaml
