@@ -79,5 +79,6 @@ tasks.register<Copy>("gh-pages") {
     group = "documentation"
     dependsOn("generateOpenApiDocs")
     from(layout.projectDirectory.dir("docs"))
+    from(layout.buildDirectory.file("openapi.yaml"))
     into(layout.buildDirectory.dir("docs"))
 }
