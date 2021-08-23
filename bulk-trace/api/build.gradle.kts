@@ -64,7 +64,7 @@ dependencyManagement {
 openApi {
     outputFileName.set("openapi.yaml")
     apiDocsUrl.set("http://localhost:8080/v3/api-docs.yaml")
-//    forkProperties = "-Dspring.profiles.active=zipking"
+//    forkProperties = "-Dspring.profiles.active=zipkin"
 }
 
 springBoot {
@@ -73,4 +73,11 @@ springBoot {
 
 jgitver {
     strategy = fr.brouillard.oss.jgitver.Strategies.MAVEN
+}
+
+tasks.register<Copy>("gh-pages") {
+    group = "documentation"
+    dependsOn("generateOpenApiDocs")
+    from(layout.projectDirectory.dir("docs"))
+    into(layout.buildDirectory.dir("docs"))
 }
