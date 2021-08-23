@@ -20,16 +20,16 @@ jobs:
         with:
           java-version: 11
 
-      - name: Gradle Build
+      - name: Gradle Build Trace Api
         uses: gradle/gradle-build-action@v1
         with:
           arguments: clean build generateOpenApiDocs gh-pages
           build-root-directory: bulk-trace/api
 
-      - name: Deploy Github Pages
+      - name: Deploy Github Pages Trace Api
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
-          branch: gh-pages # The branch the action should deploy to.
+          branch: gh-pages
           folder: bulk-trace/api/build/docs
 
 #      - name: Publish OpenApi
