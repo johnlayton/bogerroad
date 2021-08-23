@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: bulk-apis
+  description: A collection of all Bulk APIs
+spec:
+  targets:
+    - ./bulk-trace/api/bulk-trace-api.yaml
