@@ -1,5 +1,5 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: API
 metadata:
   name: bogerroad
   annotations:
@@ -7,3 +7,5 @@ metadata:
 spec:
   type: other
   lifecycle: unknown
+  definition:
+    $text: https://johnlayton.github.io/bogerroad/openapi.yaml
