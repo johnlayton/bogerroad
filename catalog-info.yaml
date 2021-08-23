@@ -5,8 +5,8 @@ metadata:
   annotations:
     github.com/project-slug: johnlayton/bogerroad
 spec:
-  type: other
-  lifecycle: unknown
+  type: openapi
+  lifecycle: development
   definition:
     $text: https://github.com/johnlayton/bogerroad/blob/gh-pages/openapi.yaml
     # https://johnlayton.github.io/bogerroad/openapi.yaml
