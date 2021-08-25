@@ -31,6 +31,19 @@ initdbScripts:
     CREATE DATABASE bulk_multi_2;
     GRANT ALL PRIVILEGES ON DATABASE bulk_multi_2 TO dbuser;
     ALTER DATABASE bulk_multi_2 OWNER TO dbuser;
+
+    CREATE DATABASE backstage_plugin_catalog;
+    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_catalog TO dbuser;
+    ALTER DATABASE backstage_plugin_catalog OWNER TO dbuser;
+
+    CREATE DATABASE backstage_plugin_auth;
+    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_auth TO dbuser;
+    ALTER DATABASE backstage_plugin_auth OWNER TO dbuser;
+
+    CREATE DATABASE backstage_plugin_scaffolder;
+    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_scaffolder TO dbuser;
+    ALTER DATABASE backstage_plugin_scaffolder OWNER TO dbuser;
+
   complete.sh: |
     #!/bin/sh
     echo "Running the complete script"

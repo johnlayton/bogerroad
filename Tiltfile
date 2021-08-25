@@ -78,8 +78,15 @@ k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 
 custom_build('bulk-trace-api',
     'cd bulk-trace/api && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
-    deps=['bulk-trace/ap/src'])
+    deps=['bulk-trace/api/src'])
 
 # pack('bulk-trace-api', path = "bulk-trace/api")
 k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
 k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
+
+
+custom_build('bulk-backstage',
+             'cd bulk-backstage && yarn clean && yarn install --frozen-lockfile && yarn tsc && yarn build && yarn build-image --tag $EXPECTED_REF',
+             deps=['bulk-backstage/packages/backend/src'])
+k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
+k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
