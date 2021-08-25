@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-backstage
+  labels:
+    app: bulk-backstage
+spec:
+  selector:
+    matchLabels:
+      app: bulk-backstage
+  template:
+    metadata:
+      labels:
+        app: bulk-backstage
+    spec:
+      containers:
+      - name: bulk-backstage
+        image: bulk-backstage
+        ports:
+        - containerPort: 7000
+        env:
+          - name: POSTGRES_HOST
+            value: 'postgresql'
+          - name: POSTGRES_PORT
+            value: '5432'
+          - name: POSTGRES_USER
+            value: 'dbuser'
+          - name: POSTGRES_PASSWORD
+            value: 'dbpass'
