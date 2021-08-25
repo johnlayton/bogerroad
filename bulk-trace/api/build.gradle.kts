@@ -1,17 +1,19 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "2.5.3"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 
-    id("com.github.johnrengelman.processes") version "0.5.0"
-    id("org.springdoc.openapi-gradle-plugin") version "1.3.2"
-    id("com.gorylenko.gradle-git-properties") version "2.3.1"
+    id("com.github.johnrengelman.processes")
+    id("org.springdoc.openapi-gradle-plugin")
+    id("com.gorylenko.gradle-git-properties")
 
 //	id("com.palantir.git-version") version "0.12.3"
-    id("fr.brouillard.oss.gradle.jgitver") version "0.10.0-rc03"
+    id("fr.brouillard.oss.gradle.jgitver")
 
-    kotlin("jvm") version "1.5.10"
-    kotlin("plugin.spring") version "1.5.10"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+
+    id("github")
 }
 
 java {
@@ -75,10 +77,3 @@ jgitver {
     strategy = fr.brouillard.oss.jgitver.Strategies.MAVEN
 }
 
-tasks.register<Copy>("gh-pages") {
-    group = "documentation"
-    dependsOn("generateOpenApiDocs")
-    from(layout.projectDirectory.dir("docs"))
-    from(layout.buildDirectory.file("openapi.yaml"))
-    into(layout.buildDirectory.dir("docs"))
-}

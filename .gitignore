@@ -8,6 +8,8 @@
 /bulk-multi/build/
 /bulk-trace/api/build/
 /bulk-trace/api/.gradle
+/buildSrc/build/
+/buildSrc/.gradle
 /tilt_modules/
 /.idea/
 /.helm/

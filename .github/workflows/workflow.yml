@@ -23,8 +23,8 @@ jobs:
       - name: Gradle Build Trace Api
         uses: gradle/gradle-build-action@v1
         with:
-          arguments: clean build generateOpenApiDocs gh-pages
-          build-root-directory: bulk-trace/api
+          arguments: buld-trace:api:gh-pages
+#          build-root-directory: bulk-trace/api
 
       - name: Deploy Github Pages Trace Api
         uses: JamesIves/github-pages-deploy-action@4.1.4
