@@ -13,7 +13,7 @@ servers:
   variables: {}
 tags:
 - name: commit
-  description: b8b2426958c6eed9d56192d894ba1981133801d0
+  description: cf05285ff574735a7f5c244d28dc7d2b8ef85b5c
 paths:
   /api/v1/workspaces:
     post:
