@@ -1,18 +1,11 @@
 package org.bogerroad
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
 import io.swagger.v3.oas.annotations.OpenAPIDefinition
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.extensions.Extension
-import io.swagger.v3.oas.annotations.extensions.ExtensionProperty
 import io.swagger.v3.oas.annotations.info.Info
 import io.swagger.v3.oas.annotations.servers.Server
 import io.swagger.v3.oas.models.tags.Tag
 import net.logstash.logback.argument.StructuredArguments.kv
-import net.logstash.logback.argument.StructuredArguments.v
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springdoc.core.customizers.OpenApiCustomiser
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -24,22 +17,13 @@ import org.springframework.boot.info.GitProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-//import org.springframework.cloud.sleuth.annotation.NewSpan
-//import org.springframework.http.HttpStatus
-//import org.springframework.http.MediaType
-//import org.springframework.kafka.annotation.KafkaListener
-//import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.io.Serializable
 import java.util.UUID
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
@@ -52,8 +36,6 @@ fun main(args: Array<String>) {
     runApplication<ApiApplication>(*args)
 }
 
-// These can come from spring build info (properties generated at build time -
-// including git info!) - Next Demo
 @OpenAPIDefinition(
     info = Info(
         title = "Workspace Service",
@@ -76,7 +58,10 @@ interface WorkspaceResource {
     @Operation(
         description = "blah blah"
     )
-    fun createWorkspace(@RequestHeader("X-Subscriber-ID") subscriberId: String,  @Valid @RequestBody workspace : Workspace) : WorkspaceResponse = WorkspaceResponse(UUID.randomUUID())
+    fun createWorkspace(
+        @RequestHeader("X-Subscriber-ID") subscriberId: String,
+        @Valid @RequestBody workspace: Workspace
+    ): WorkspaceResponse = WorkspaceResponse(UUID.randomUUID())
 
 }
 
@@ -85,14 +70,14 @@ class WorkspaceResourceImpl : WorkspaceResource {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun createWorkspace(subscriberId: String, workspace : Workspace) : WorkspaceResponse {
+    override fun createWorkspace(subscriberId: String, workspace: Workspace): WorkspaceResponse {
         logger.info("Workspace created {}", kv("workspace", workspace, workspace.mortgageApplicationReference))
         return WorkspaceResponse(UUID.randomUUID())
     }
 }
 
-data class Workspace (
-    val transactionType : TransactionType,
+data class Workspace(
+    val transactionType: TransactionType,
     val jurisdiction: Jurisdiction,
     val securityAddress: SecurityAddress,
     @field:NotBlank @field:Size(min = 0, max = 30) val mortgageApplicationReference: String
@@ -103,7 +88,7 @@ enum class TransactionType(val code: String) {
     NEW_PURCHASE("NEW_PURCHASE")
 }
 
-enum class Jurisdiction(val code: String)  {
+enum class Jurisdiction(val code: String) {
     ENGLAND_WALES("ENGLAND_WALES")
 }
 

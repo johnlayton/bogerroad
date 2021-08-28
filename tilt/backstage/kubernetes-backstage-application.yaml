@@ -27,9 +27,10 @@ spec:
             value: 'dbuser'
           - name: POSTGRES_PASSWORD
             value: 'dbpass'
-          - name: AUTH_GITHUB_CLIENT_ID
-            value: <{AUTH_GITHUB_CLIENT_ID}
-          - name: AUTH_GITHUB_CLIENT_SECRET
-            value: <{AUTH_GITHUB_CLIENT_SECRET}
-          - name: GITHUB_TOKEN
-            value: 'GITHUB_TOKEN'
+        envFrom:
+          - secretRef:
+              name: github
+#          - configMapRef:
+#              name: bulk-email-app-configmap-stage
+#          - configMapRef:
+#              name: bulk-email-app-environment-config-stage

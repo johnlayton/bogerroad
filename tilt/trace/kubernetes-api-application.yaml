@@ -20,4 +20,4 @@ spec:
         - containerPort: 8080
         env:
           - name: SPRING_PROFILES_ACTIVE
-            value: zipkin
+            value: default

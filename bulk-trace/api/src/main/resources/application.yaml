@@ -60,6 +60,7 @@ springdoc:
 
 logging:
   level:
+    org.bogerroad: DEBUG
     org.springframework.cloud.sleuth: DEBUG
     io.opentelemetry.exporter.otlp.trace: DEBUG
 

@@ -1,7 +1,13 @@
 # -*- mode: Python -*-
 #
+load('ext://tilt_inspector', 'tilt_inspector')
+load('ext://configmap', 'configmap_create', 'configmap_from_dict')
+load('ext://secret', 'secret_yaml_generic', 'secret_from_dict')
 load('ext://helm_remote', 'helm_remote')
 load('ext://pack', 'pack')
+
+# tilt_inspector()
+
 #
 # #helm_remote('mysql',
 # #            repo_name='stable',
@@ -75,6 +81,14 @@ k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 # # pack('bulk-trace-api', path = "bulk-trace/api")
 # k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
 # k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
+
+
+k8s_yaml(secret_from_dict("github", inputs = {
+    'GITHUB_TOKEN'              : os.getenv("GITHUB_TOKEN"),
+    'AUTH_GITHUB_CLIENT_ID'     : os.getenv("AUTH_GITHUB_CLIENT_ID"),
+    'AUTH_GITHUB_CLIENT_SECRET' : os.getenv("AUTH_GITHUB_CLIENT_SECRET")
+}))
+
 analytics_settings(enable=False)
 
 custom_build('bulk-trace-api',
@@ -84,10 +98,38 @@ custom_build('bulk-trace-api',
 k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
 k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
 
-print('AUTH_GITHUB_CLIENT_ID = ' + os.environ.get('AUTH_GITHUB_CLIENT_ID', ''))
-print('AUTH_GITHUB_CLIENT_SECRET = ' + os.environ.get('AUTH_GITHUB_CLIENT_SECRET', ''))
 custom_build('bulk-backstage',
-             'env | grep GITHUB && cd bulk-backstage && yarn clean && yarn install --frozen-lockfile && yarn tsc && yarn build && yarn build-image --tag $EXPECTED_REF',
+             'cd bulk-backstage && yarn clean && yarn install --frozen-lockfile && yarn tsc && yarn build && yarn build-image --tag $EXPECTED_REF',
              deps=['bulk-backstage/packages/backend/src'])
 k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
 k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
+
+# def secret_from_dict(name, namespace="", inputs={}):
+#     """Returns YAML for a generic secret
+#     Args:
+#         name: The configmap name.
+#         namespace: The namespace.
+#         inputs: A dict of keys and values to use. Nesting is not supported
+#     Returns:
+#         The secret YAML as a blob
+#     """
+#
+#     args = [
+#         "kubectl",
+#         "create",
+#         "secret",
+#         "generic",
+#         name,
+#     ]
+#
+#     if namespace:
+#         args.extend(["-n", namespace])
+#
+#     if type(inputs) != "dict":
+#         fail("Bad argument to secret_from_dict, inputs was not dict typed")
+#
+#     for k,v in inputs.items():
+#         args.extend(["--from-literal", "%s=%s" % (k,v)])
+#
+#     args.extend(["-o=yaml", "--dry-run=client"])
+#     return local(args, quiet=True)
