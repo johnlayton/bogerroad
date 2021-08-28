@@ -81,7 +81,6 @@ custom_build('bulk-trace-api',
     './gradlew --no-daemon bulk-trace:api:bootBuildImage --imageName=$EXPECTED_REF',
     deps=['bulk-trace/api/src'])
 
-# pack('bulk-trace-api', path = "bulk-trace/api")
 k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
 k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
 
@@ -92,10 +91,3 @@ custom_build('bulk-backstage',
              deps=['bulk-backstage/packages/backend/src'])
 k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
 k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
-
-# name: GITHUB_TOKEN
-# value: ‘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’
-# name: AUTH_GITHUB_CLIENT_ID
-# value: ‘ec0816fabaf27c511908’
-# name: AUTH_GITHUB_CLIENT_SECRET
-# value: ‘076f78711e3774abe3f92df540f935827286bcb1’
