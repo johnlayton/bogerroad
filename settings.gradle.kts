@@ -9,5 +9,7 @@ pluginManagement {
 rootProject.name = "bulk"
 
 include(
-    "bulk-trace:api"
+    "bulk-trace:api",
+    "bulk-stream"
+
 )

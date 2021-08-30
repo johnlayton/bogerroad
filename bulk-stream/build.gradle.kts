@@ -3,15 +3,16 @@ import com.google.protobuf.gradle.*
 
 plugins {
     id("java")
-    id("org.springframework.boot") version "2.5.1"
+    id("org.springframework.boot")
 /*
     TODO: Add native image support
     id("org.springframework.experimental.aot") version "0.10.0"
 */
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.spring.dependency-management")
     id("com.google.protobuf") version "0.8.16"
-    kotlin("jvm") version "1.5.10"
-    kotlin("plugin.spring") version "1.5.21"
+
+    kotlin("jvm")
+    kotlin("plugin.spring")
     kotlin("plugin.jpa") version "1.5.21"
     kotlin("plugin.serialization") version "1.5.20"
 }
