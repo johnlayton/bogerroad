@@ -76,11 +76,11 @@ k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 # k8s_yaml('tilt/trigger/kubernetes-application.yaml')
 # k8s_resource('bulk-trigger', port_forwards=['8081:8080'])
 
-custom_build('bulk-trace-api',
-    './gradlew --no-daemon bulk-trace:api:bootBuildImage --imageName=$EXPECTED_REF',
-    deps=['bulk-trace/api/src'])
-k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
-k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
+# custom_build('bulk-trace-api',
+#     './gradlew --no-daemon bulk-trace:api:bootBuildImage --imageName=$EXPECTED_REF',
+#     deps=['bulk-trace/api/src'])
+# k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
+# k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
 
 k8s_yaml(secret_from_dict("github", inputs = {
     'GITHUB_TOKEN'              : os.getenv("GITHUB_TOKEN"),
@@ -93,35 +93,35 @@ custom_build('bulk-backstage',
 k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
 k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
 
-def secret_from_dict(name, namespace="", inputs={}):
-    """Returns YAML for a generic secret
-    Args:
-        name: The configmap name.
-        namespace: The namespace.
-        inputs: A dict of keys and values to use. Nesting is not supported
-    Returns:
-        The secret YAML as a blob
-    """
-
-    args = [
-        "kubectl",
-        "create",
-        "secret",
-        "generic",
-        name,
-    ]
-
-    if namespace:
-        args.extend(["-n", namespace])
-
-    if type(inputs) != "dict":
-        fail("Bad argument to secret_from_dict, inputs was not dict typed")
-
-    for k,v in inputs.items():
-        args.extend(["--from-literal", "%s=%s" % (k,v)])
-
-    args.extend(["-o=yaml", "--dry-run=client"])
-
-    # print(args)
-
-    return local(args, quiet=True)
+# def secret_from_dict(name, namespace="", inputs={}):
+#     """Returns YAML for a generic secret
+#     Args:
+#         name: The configmap name.
+#         namespace: The namespace.
+#         inputs: A dict of keys and values to use. Nesting is not supported
+#     Returns:
+#         The secret YAML as a blob
+#     """
+#
+#     args = [
+#         "kubectl",
+#         "create",
+#         "secret",
+#         "generic",
+#         name,
+#     ]
+#
+#     if namespace:
+#         args.extend(["-n", namespace])
+#
+#     if type(inputs) != "dict":
+#         fail("Bad argument to secret_from_dict, inputs was not dict typed")
+#
+#     for k,v in inputs.items():
+#         args.extend(["--from-literal", "%s=%s" % (k,v)])
+#
+#     args.extend(["-o=yaml", "--dry-run=client"])
+#
+#     # print(args)
+#
+#     return local(args, quiet=True)
