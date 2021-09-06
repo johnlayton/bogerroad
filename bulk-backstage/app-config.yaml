@@ -81,6 +81,10 @@ catalog:
     - type: url
       target: https://github.com/johnlayton/bogerroad/blob/main/all-apis.yaml
 
+    # Bulk example APIs
+    - type: url
+      target: https://github.com/johnlayton/bogerroad/blob/main/all-apis.yaml
+
     # Backstage example components
     - type: url
       target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/all-components.yaml
