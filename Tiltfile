@@ -25,7 +25,7 @@ helm_remote('postgresql',
             repo_name='bitnami',
             repo_url='https://charts.bitnami.com/bitnami',
             values='tilt/postgresql/kubernetes-postgresql-values.yaml')
-k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
+k8s_resource(new_name='postgresql', workload='postgresql-postgresql', port_forwards=['5432:5432'])
 #
 # # helm_remote('jaeger',
 # #             repo_name='jaegertracing',
@@ -82,16 +82,16 @@ k8s_resource(workload='postgresql-postgresql', port_forwards=['5432:5432'])
 # k8s_yaml('tilt/trace/kubernetes-api-application.yaml')
 # k8s_resource('bulk-trace-api', port_forwards=['8081:8080'])
 
-k8s_yaml(secret_from_dict("github", inputs = {
-    'GITHUB_TOKEN'              : os.getenv("GITHUB_TOKEN"),
-    'AUTH_GITHUB_CLIENT_ID'     : os.getenv("AUTH_GITHUB_CLIENT_ID"),
-    'AUTH_GITHUB_CLIENT_SECRET' : os.getenv("AUTH_GITHUB_CLIENT_SECRET")
-}))
-custom_build('bulk-backstage',
-             'cd bulk-backstage && yarn clean && yarn install --frozen-lockfile && yarn tsc && yarn build && yarn build-image --tag $EXPECTED_REF',
-             deps=['bulk-backstage/packages/backend/src'])
-k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
-k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
+# k8s_yaml(secret_from_dict("github", inputs = {
+#     'GITHUB_TOKEN'              : os.getenv("GITHUB_TOKEN"),
+#     'AUTH_GITHUB_CLIENT_ID'     : os.getenv("AUTH_GITHUB_CLIENT_ID"),
+#     'AUTH_GITHUB_CLIENT_SECRET' : os.getenv("AUTH_GITHUB_CLIENT_SECRET")
+# }))
+# custom_build('bulk-backstage',
+#              'cd bulk-backstage && yarn clean && yarn install --frozen-lockfile && yarn tsc && yarn build && yarn build-image --tag $EXPECTED_REF',
+#              deps=['bulk-backstage/packages/backend/src'])
+# k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
+# k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
 
 # def secret_from_dict(name, namespace="", inputs={}):
 #     """Returns YAML for a generic secret
