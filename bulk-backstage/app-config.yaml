@@ -81,9 +81,9 @@ catalog:
     - type: url
       target: https://github.com/johnlayton/bogerroad/blob/main/all-apis.yaml
 
-    # Bulk example APIs
+    # Kinta example APIs
     - type: url
-      target: https://github.com/johnlayton/bogerroad/blob/main/all-apis.yaml
+      target: https://github.com/johnlayton/kintaclose/edit/master/catalog-info.yaml
 
     # Backstage example components
     - type: url
