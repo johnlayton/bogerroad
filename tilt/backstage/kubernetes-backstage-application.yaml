@@ -29,9 +29,14 @@ spec:
             value: 'dbpass'
           - name: DOCKER_HOST
             value: tcp://localhost:2375
+          - name: LOG_LEVEL
+            value: debug
         envFrom:
           - secretRef:
               name: github
+#        volumeMounts:
+#          - mountPath: /var/run
+#            name: docker-sock
       - name: dind-daemon
         image: docker:18.05-dind
         resources:
@@ -46,6 +51,9 @@ spec:
       volumes:
         - name: docker-graph-storage
           emptyDir: {}
+#        - name: docker-sock
+#          hostPath:
+#            path: /var/run
 #          - configMapRef:
 #              name: ...
 #          - configMapRef:
