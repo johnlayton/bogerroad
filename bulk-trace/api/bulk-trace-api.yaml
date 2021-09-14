@@ -13,8 +13,11 @@ metadata:
     - url: https://github.com/johnlayton/bogerroad/blob/gh-pages/openapi.yaml
       title: API Spec
       icon: code
-spec:
-  type: openapi
+  # Example for optional annotations
+ annotations:
+#     github.com/project-slug: backstage/backstage
+     backstage.io/techdocs-ref: dir:.
+type: openapi
   lifecycle: production
   definition:
     $text: https://github.com/johnlayton/bogerroad/blob/gh-pages/openapi.yaml
