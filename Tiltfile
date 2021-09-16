@@ -93,3 +93,9 @@ custom_build('bulk-backstage',
 k8s_yaml('tilt/backstage/kubernetes-backstage-application.yaml')
 k8s_resource('bulk-backstage', port_forwards=['7000:7000'])
 
+k8s_yaml(secret_from_dict("server", inputs = {
+    'secret_key_base'    : "8273f56e9a2722fd91855f9a0a30bc7f757517d1d0e63010eec12648c827f3031858c5d0cec4da9406f0116f3d7d59a4073799f10c9315a6e3641f8c2705a8f5",
+    'lockbox_key'        : "4ab859506217cbea3edcc51a68e9dc6fb542875f9aa660ffedb39443c2d2cfe1"
+}))
+k8s_yaml('tilt/tooljet/kubernetes-tooljet-application.yaml')
+k8s_resource('tooljet', port_forwards=['3000:3000'])

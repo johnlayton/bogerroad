@@ -1,17 +1,16 @@
 package org.bogerroad
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
+//import java.io.Serializable
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.TemplateFunction
 import io.grpc.stub.StreamObserver
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 import net.logstash.logback.argument.StructuredArguments.kv
 import net.logstash.logback.argument.StructuredArguments.v
 import org.apache.kafka.clients.admin.NewTopic
-import org.apache.kafka.common.serialization.Deserializer
 import org.hibernate.annotations.GenericGenerator
 import org.lognet.springboot.grpc.GRpcService
 import org.slf4j.LoggerFactory
@@ -41,9 +40,10 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionalEventListener
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-//import java.io.Serializable
+import java.awt.print.Book
 import java.io.StringReader
 import java.io.StringWriter
 import java.util.Date
@@ -54,9 +54,9 @@ import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
 import javax.persistence.Table
-import kotlinx.serialization.Serializer as Serializer
-import org.apache.kafka.common.serialization.Serializer as KafkaSerializer
 import org.apache.kafka.common.serialization.Deserializer as KafkaDeserializer
+import org.apache.kafka.common.serialization.Serializer as KafkaSerializer
+
 
 @SpringBootApplication
 class StreamApplication
@@ -292,6 +292,21 @@ class RabbitComponent {
 
     }
 }
+
+@Component
+class KafkaEventComponent(private val kafkaTemplate: KafkaTemplate<String, PartyAddedEvent>) {
+
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    @TransactionalEventListener
+    @Transactional(propagation = REQUIRES_NEW)
+    fun updateParty(event: PartyAdded) {
+        kafkaTemplate.send("topic1", PartyAddedEvent().also {
+            detail1 = event.detail1
+        })
+    }
+}
+
 
 @Component
 class KafkaComponent {

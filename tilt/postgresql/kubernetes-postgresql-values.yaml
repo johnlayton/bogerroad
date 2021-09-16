@@ -44,6 +44,11 @@ initdbScripts:
     GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_scaffolder TO dbuser;
     ALTER DATABASE backstage_plugin_scaffolder OWNER TO dbuser;
 
+#    CREATE DATABASE tooljet;
+#    GRANT ALL PRIVILEGES ON DATABASE tooljet TO dbuser;
+#    ALTER DATABASE tooljet OWNER TO dbuser;
+#
+#    CREATE EXTENSION IF NOT EXISTS "pgcrypto"
   complete.sh: |
     #!/bin/sh
     echo "Running the complete script"
