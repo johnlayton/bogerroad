@@ -21,9 +21,9 @@ spec:
         - name: docker-secret
       containers:
         - name: container
-          image: tooljet/tooljet-ce:latest
+          image: tooljet/tooljet-ce
           imagePullPolicy: Always
-          args: ["npm", "run", "start:prod"]
+          args: ["npm", "run", "start"]
           resources:
             limits:
               memory: "2000Mi"
@@ -50,6 +50,8 @@ spec:
               value: 'postgres'
             - name: PG_PASS
               value: 'postgres'
+            - name: SMTP_ADDRESS
+              value: 'smtp://mailhog1025'
 #            - name: LOCKBOX_MASTER_KEY
 #              value: 'dbpass'
 #            - name: SECRET_KEY_BASE

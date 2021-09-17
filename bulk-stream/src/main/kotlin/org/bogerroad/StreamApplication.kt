@@ -13,6 +13,7 @@ import net.logstash.logback.argument.StructuredArguments.v
 import org.apache.kafka.clients.admin.NewTopic
 import org.hibernate.annotations.GenericGenerator
 import org.lognet.springboot.grpc.GRpcService
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.AmqpAdmin
 import org.springframework.amqp.core.AmqpTemplate
@@ -30,6 +31,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.domain.DomainEvents
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.web.JsonPath
@@ -39,11 +41,12 @@ import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import java.awt.print.Book
 import java.io.StringReader
 import java.io.StringWriter
 import java.util.Date
@@ -69,9 +72,9 @@ fun main(args: Array<String>) {
 class TemplateLoader(private val repository: TemplateRepository) : CommandLineRunner {
     override fun run(vararg args: String?) {
         listOf(
-                Template(text = "Hello {{ name }}!"),
-                Template(text = "Bonjour {{ name }}!"),
-                Template(text = "Privet {{ name }}!"),
+            Template(text = "Hello {{ name }}!"),
+            Template(text = "Bonjour {{ name }}!"),
+            Template(text = "Privet {{ name }}!"),
         ).forEach {
             repository.save(it)
         }
@@ -92,10 +95,10 @@ class TemplateService(private val repository: TemplateRepository) {
 
 @GRpcService
 class MessageStreamService(
-        private val service: TemplateService,
-        private val amqpTemplate: AmqpTemplate,
-        private val kafkaTemplate: KafkaTemplate<String, EmailMessage>)
-    : MessageServiceGrpc.MessageServiceImplBase() {
+    private val service: TemplateService,
+    private val amqpTemplate: AmqpTemplate,
+    private val kafkaTemplate: KafkaTemplate<String, EmailMessage>
+) : MessageServiceGrpc.MessageServiceImplBase() {
 
     private val logger = LoggerFactory.getLogger(javaClass)
     private val mustache = DefaultMustacheFactory()
@@ -104,8 +107,8 @@ class MessageStreamService(
         logger.info("Template Request {}", v("request", request))
         val template = service.save(Template(text = request.template))
         val response = TemplateResponse.newBuilder()
-                .setId(template.id)
-                .build()
+            .setId(template.id)
+            .build()
         responseObserver.onNext(response)
         responseObserver.onCompleted()
     }
@@ -120,28 +123,28 @@ class MessageStreamService(
                 logger.info("Validate {}", v("dataMap", messageRequest.dataMap))
                 val template = service.findById(messageRequest.templateId).map { it.text }.orElse("")
                 val context = mutableMapOf(
-                        "date" to Date(),
-                        "bold" to TemplateFunction { input ->
-                            String.format("<b>%s</b>", input)
-                        }
+                    "date" to Date(),
+                    "bold" to TemplateFunction { input ->
+                        String.format("<b>%s</b>", input)
+                    }
                 )
                 context.putAll(messageRequest.dataMap)
                 val message: String =
-                        mustache.compile(StringReader(template), messageRequest.templateId)
-                                .execute(StringWriter(), context)
-                                .toString()
+                    mustache.compile(StringReader(template), messageRequest.templateId)
+                        .execute(StringWriter(), context)
+                        .toString()
                 logger.info("Message {}", v("message", message))
                 responseObserver.onNext(
-                        MessageResponse.newBuilder()
-                                .setMessage(message)
-                                .build()
+                    MessageResponse.newBuilder()
+                        .setMessage(message)
+                        .build()
                 )
                 val email = EmailMessage(
-                        messageRequest.contact.firstName,
-                        messageRequest.contact.lastName,
-                        messageRequest.contact.email,
-                        messageRequest.contact.mobile,
-                        message
+                    messageRequest.contact.firstName,
+                    messageRequest.contact.lastName,
+                    messageRequest.contact.email,
+                    messageRequest.contact.mobile,
+                    message
                 )
                 amqpTemplate.convertAndSend("bulk-messaging-exchange", "bulk-message-email-queue", email)
                 kafkaTemplate.send("topic1", email)
@@ -182,19 +185,6 @@ data class EmailMessage(
 @Entity
 @Table(name = "template")
 data class Template(
-        @Id
-        @GeneratedValue(generator = "UUID")
-        @GenericGenerator(
-                name = "UUID",
-                strategy = "org.hibernate.id.UUIDGenerator"
-        )
-        val id: String = UUID.randomUUID().toString(),
-        val text: String
-)
-
-@Entity
-@Table(name = "settlement")
-data class Settlement(
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -202,18 +192,39 @@ data class Settlement(
         strategy = "org.hibernate.id.UUIDGenerator"
     )
     val id: String = UUID.randomUUID().toString(),
+    val text: String
+) {
+    @DomainEvents
+    fun domainEvents(): List<Any> {
+        return listOf(Event(templateId = id, text = "created"))
+    }
+}
+
+@Entity
+@Table(name = "event")
+data class Event(
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    val id: String = UUID.randomUUID().toString(),
+    val templateId: String = UUID.randomUUID().toString(),
+    val text: String
 )
 
 interface TemplateRepository : JpaRepository<Template, String>, JpaSpecificationExecutor<Template>
+interface EventRepository : JpaRepository<Event, String>, JpaSpecificationExecutor<Event>
 
 @Configuration
 class KafkaConfiguration(val kafkaAdmin: KafkaAdmin) {
     @Bean
     fun topic(): NewTopic {
         return TopicBuilder.name("topic1")
-                .partitions(10)
-                .replicas(1)
-                .build()
+            .partitions(10)
+            .replicas(1)
+            .build()
     }
 }
 
@@ -240,25 +251,25 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
     fun init() {
         try {
             logger.info(
-                    "Creating directExchange: exchange={}, routingKey={}",
-                    v("exchange", "bulk-messaging-exchange"),
-                    v("routingKey", "bulk-message-email-queue")
+                "Creating directExchange: exchange={}, routingKey={}",
+                v("exchange", "bulk-messaging-exchange"),
+                v("routingKey", "bulk-message-email-queue")
             )
 
             val ex =
-                    ExchangeBuilder.directExchange("bulk-messaging-exchange")
-                            .durable(true)
-                            .build<Exchange>()
+                ExchangeBuilder.directExchange("bulk-messaging-exchange")
+                    .durable(true)
+                    .build<Exchange>()
             amqpAdmin.declareExchange(ex)
 
             val q = QueueBuilder.durable("bulk-message-email-queue")
-                    .build()
+                .build()
             amqpAdmin.declareQueue(q)
 
             val b: Binding = BindingBuilder.bind(q)
-                    .to(ex)
-                    .with("bulk-message-email-queue")
-                    .noargs()
+                .to(ex)
+                .with("bulk-message-email-queue")
+                .noargs()
             amqpAdmin.declareBinding(b)
 
             logger.info("Binding successfully created.")
@@ -294,19 +305,31 @@ class RabbitComponent {
 }
 
 @Component
-class KafkaEventComponent(private val kafkaTemplate: KafkaTemplate<String, PartyAddedEvent>) {
+class DomainEventListenerComponent(
+    private val repository: EventRepository
+//    private val kafkaTemplate: KafkaTemplate<String, PartyAddedEvent>
+) {
 
-    private val logger = LoggerFactory.getLogger(javaClass)
+//    private val logger = LoggerFactory.getLogger(javaClass)
 
-    @TransactionalEventListener
-    @Transactional(propagation = REQUIRES_NEW)
-    fun updateParty(event: PartyAdded) {
-        kafkaTemplate.send("topic1", PartyAddedEvent().also {
-            detail1 = event.detail1
-        })
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun update(event: Event) {
+        logger.info("=========================================================")
+        logger.info("Event: ")
+        logger.info("=========================================================")
+        repository.save(event)
+//        kafkaTemplate.send("topic1", PartyAddedEvent().also {
+//            detail1 = event.detail1
+//        })
+    }
+
+    companion object {
+        val logger: Logger by lazy {
+            LoggerFactory.getLogger(DomainEventListenerComponent::class.java)
+        }
     }
 }
-
 
 @Component
 class KafkaComponent {
@@ -321,6 +344,7 @@ class KafkaComponent {
     }
 }
 
+@ExperimentalSerializationApi
 class EmailMessageSerializer : KafkaSerializer<EmailMessage>, KafkaDeserializer<EmailMessage> {
     override fun serialize(topic: String, data: EmailMessage): ByteArray {
         return Json.encodeToString(data).encodeToByteArray()

@@ -1,0 +1,4 @@
+service:
+  port:
+    http: 8025
+    smtp: 1025
