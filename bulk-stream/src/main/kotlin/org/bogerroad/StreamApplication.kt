@@ -316,7 +316,7 @@ class DomainEventListenerComponent(
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun update(event: Event) {
         logger.info("=========================================================")
-        logger.info("Event: ")
+        logger.info("Event: ${event}")
         logger.info("=========================================================")
         repository.save(event)
 //        kafkaTemplate.send("topic1", PartyAddedEvent().also {
