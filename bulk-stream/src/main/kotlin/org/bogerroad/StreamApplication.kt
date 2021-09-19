@@ -234,16 +234,16 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
 
     @Bean
     fun classMapper(): DefaultClassMapper {
-        return DefaultClassMapper().also {
-            it.setIdClassMapping(mapOf("emailMessage" to EmailMessage::class.java))
+        return DefaultClassMapper().also { mapper ->
+            mapper.setIdClassMapping(mapOf("emailMessage" to EmailMessage::class.java))
         }
     }
 
     @Bean
     fun jsonMessageConverter(objectMapper: ObjectMapper, classMapper: ClassMapper): Jackson2JsonMessageConverter {
-        return Jackson2JsonMessageConverter(objectMapper).also {
-            it.classMapper = classMapper
-            it.setUseProjectionForInterfaces(true)
+        return Jackson2JsonMessageConverter(objectMapper).also { converter ->
+            converter.classMapper = classMapper
+            converter.setUseProjectionForInterfaces(true)
         }
     }
 
