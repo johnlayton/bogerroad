@@ -242,7 +242,7 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
     @Bean
     fun jsonMessageConverter(objectMapper: ObjectMapper, classMapper: ClassMapper): Jackson2JsonMessageConverter {
         return Jackson2JsonMessageConverter(objectMapper).also { converter ->
-            converter.classMapper = classMapper
+            converter.setClassMapper(classMapper)
             converter.setUseProjectionForInterfaces(true)
         }
     }
