@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.event.EventListener
 import org.springframework.data.domain.DomainEvents
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
@@ -314,6 +315,9 @@ class DomainEventListenerComponent(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+/*
+    @EventListener
+*/
     fun update(event: Event) {
         logger.info("=========================================================")
         logger.info("Event: ${event}")
