@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: kafka:9092
+      function:
+        bindings:
+
+      bindings:
+        emailMessageConsumer-in-0.destination: topic1
+        emailTemplateConsumer-in-0.destination: topic2
+
+#      function:
+#        bindings:
+
+

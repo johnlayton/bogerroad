@@ -11,6 +11,6 @@ rootProject.name = "bulk"
 include(
     "bulk-plan:api",
     "bulk-trace:api",
-    "bulk-stream"
-
+    "bulk-stream",
+    "bulk-cloud:template-consumer"
 )

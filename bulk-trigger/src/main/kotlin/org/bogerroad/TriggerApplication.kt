@@ -364,7 +364,7 @@ class KafkaComponent {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @KafkaListener(id = "myId", topics = ["topic1"])
+    @KafkaListener(id = "TriggerApplicationMessageListener", topics = ["topic1"])
     fun listen(value: EmailMessage) {
         logger.info("=========================================================")
         logger.info("Message: {}", value)

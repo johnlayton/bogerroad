@@ -8,6 +8,7 @@
 /bulk-multi/build/
 /bulk-trace/api/build/
 /bulk-trace/api/.gradle
+/bulk-cloud/template-consumer/build
 /buildSrc/build/
 /buildSrc/.gradle
 /tilt_modules/

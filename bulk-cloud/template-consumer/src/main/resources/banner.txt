@@ -1,0 +1,5 @@
+${AnsiColor.BRIGHT_RED}
+==============================================
+== Bulk Cloud Template Consumer Application
+==============================================
+${AnsiColor.DEFAULT}

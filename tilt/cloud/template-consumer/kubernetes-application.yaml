@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-cloud-template-consumer
+  labels:
+    app: bulk-cloud-template-consumer
+spec:
+  selector:
+    matchLabels:
+      app: bulk-cloud-template-consumer
+  template:
+    metadata:
+      labels:
+        app: bulk-cloud-template-consumer
+    spec:
+      containers:
+      - name: bulk-cloud-template-consumer
+        image: bulk-cloud-template-consumer

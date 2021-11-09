@@ -1,6 +1,8 @@
 package org.bogerroad
 
-//import java.io.Serializable
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.io.Serializable as JavaSerializable
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.mustachejava.DefaultMustacheFactory
@@ -98,7 +100,8 @@ class TemplateService(private val repository: TemplateRepository) {
 class MessageStreamService(
     private val service: TemplateService,
     private val amqpTemplate: AmqpTemplate,
-    private val kafkaTemplate: KafkaTemplate<String, EmailMessage>
+    private val kafkaTemplate: KafkaTemplate<String, EmailMessage>,
+    private val kafkaTemplateTemplate: KafkaTemplate<String, EmailTemplate>
 ) : MessageServiceGrpc.MessageServiceImplBase() {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -107,6 +110,10 @@ class MessageStreamService(
     override fun create(request: TemplateRequest, responseObserver: StreamObserver<TemplateResponse>) {
         logger.info("Template Request {}", v("request", request))
         val template = service.save(Template(text = request.template))
+        kafkaTemplateTemplate.send("topic2", EmailTemplate(
+            id = template.id,
+            text = template.text
+        ))
         val response = TemplateResponse.newBuilder()
             .setId(template.id)
             .build()
@@ -164,16 +171,20 @@ class MessageStreamService(
     }
 }
 
-/*
 data class EmailMessage @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
         @param:JsonProperty("firstName") val firstName: String,
         @param:JsonProperty("lastName") val lastName: String,
         @param:JsonProperty("email") val email: String,
         @param:JsonProperty("mobile") val mobile: String,
         @param:JsonProperty("message") val message: String
-) : Serializable
-*/
+) : JavaSerializable
 
+data class EmailTemplate @JsonCreator(mode = JsonCreator.Mode.PROPERTIES) constructor(
+    @param:JsonProperty("id") val id: String,
+    @param:JsonProperty("text") val text: String
+) : JavaSerializable
+
+/*
 @Serializable
 data class EmailMessage(
     val firstName: String,
@@ -182,6 +193,13 @@ data class EmailMessage(
     val mobile: String,
     val message: String
 )
+
+@Serializable
+data class EmailTemplate(
+    val id: String,
+    val text: String
+)
+*/
 
 @Entity
 @Table(name = "template")
@@ -221,8 +239,15 @@ interface EventRepository : JpaRepository<Event, String>, JpaSpecificationExecut
 @Configuration
 class KafkaConfiguration(val kafkaAdmin: KafkaAdmin) {
     @Bean
-    fun topic(): NewTopic {
+    fun messageTtopic(): NewTopic {
         return TopicBuilder.name("topic1")
+            .partitions(10)
+            .replicas(1)
+            .build()
+    }
+    @Bean
+    fun templateTopic(): NewTopic {
+        return TopicBuilder.name("topic2")
             .partitions(10)
             .replicas(1)
             .build()
@@ -295,13 +320,11 @@ class RabbitComponent {
 
     @RabbitListener(queues = ["bulk-message-email-queue"])
     fun projection(projection: EmailMessageProjection) {
-
         logger.info("=========================================================")
         logger.info("Message:")
         logger.info("\tAddress: {}", v("email", projection.email))
         logger.info("\tMessage: {}", v("message", projection.message))
         logger.info("=========================================================")
-
     }
 }
 
@@ -340,10 +363,17 @@ class KafkaComponent {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @KafkaListener(id = "myId", topics = ["topic1"])
+    @KafkaListener(id = "StreamApplicationMessageListener", topics = ["topic1"])
     fun listen(value: EmailMessage) {
         logger.info("=========================================================")
         logger.info("Message: {}", value)
+        logger.info("=========================================================")
+    }
+
+    @KafkaListener(id = "StreamApplicationTemplateListener", topics = ["topic2"])
+    fun listen(value: EmailTemplate) {
+        logger.info("=========================================================")
+        logger.info("Template: {}", value)
         logger.info("=========================================================")
     }
 }

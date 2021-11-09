@@ -69,6 +69,12 @@ custom_build('bulk-stream',
 k8s_yaml('tilt/stream/kubernetes-application.yaml')
 k8s_resource('bulk-stream', port_forwards=['6565:6565', '8080:8080'])
 
+custom_build('bulk-cloud-template-consumer',
+    './gradlew --no-daemon bulk-cloud:template-consumer:bootBuildImage --imageName=$EXPECTED_REF',
+    deps=['bulk-cloud/template-consumer/src'])
+k8s_yaml('tilt/cloud/template-consumer/kubernetes-application.yaml')
+k8s_resource('bulk-cloud-template-consumer', port_forwards=['8084:8080'])
+
 # custom_build('bulk-trigger',
 #     'cd bulk-trigger && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',
 #     deps=['bulk-trigger/src'])
