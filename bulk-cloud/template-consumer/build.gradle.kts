@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     implementation("org.springframework.cloud:spring-cloud-stream-binder-kafka")
+    implementation("org.springframework.boot:spring-boot-devtools")
 /*
     implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
 */
@@ -63,7 +64,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:2.5.3")
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.3")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.4")
 //        mavenBom("org.springframework.cloud:spring-cloud-sleuth-otel-dependencies:1.0.0-SNAPSHOT")
     }
 }

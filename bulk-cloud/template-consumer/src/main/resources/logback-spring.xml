@@ -1,10 +1,11 @@
 <configuration>
 
+<!--
     <springProfile name="default">
         <include resource="org/springframework/boot/logging/logback/base.xml"/>
     </springProfile>
+-->
 
-<!--
     <springProfile name="default">
         <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -15,6 +16,5 @@
             <appender-ref ref="jsonConsoleAppender"/>
         </root>
     </springProfile>
--->
 
 </configuration>

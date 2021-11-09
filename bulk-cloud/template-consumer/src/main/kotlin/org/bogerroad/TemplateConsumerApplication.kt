@@ -10,11 +10,48 @@ import org.springframework.boot.runApplication
 import org.springframework.cloud.stream.annotation.StreamListener
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
 import java.util.function.Consumer
 import java.io.Serializable as JavaSerializable
 
 @SpringBootApplication
-class TemplateConsumerApplication
+class TemplateConsumerApplication {
+
+//    @Bean
+//    fun emailTemplateConsumer(): Consumer<EmailTemplate> {
+//        return Consumer {
+//            logger.warn("Template id: ${it.id}, text: ${it.text}")
+//        }
+//    }
+
+//
+//    @Bean
+//    fun emailMessageConsumer(): Consumer<EmailMessage> =
+//        Consumer {
+//            logger.warn("Message to: ${it.firstName} ${it.lastName}, message: ${it.message}", v("message", it))
+//        }
+//
+//    companion object {
+//        val logger: Logger by lazy {
+//            LoggerFactory.getLogger(TemplateConsumerApplication::class.java)
+//        }
+//    }
+}
+
+//@Component
+//class EmailTemplateConsumer : Consumer<EmailTemplate> {
+//    override fun accept(it: EmailTemplate) {
+////        TODO("Not yet implemented")
+//        logger.warn("Template id: ${it.id}, text: ${it.text}")
+//    }
+//
+//    companion object {
+//        val logger: Logger by lazy {
+//            LoggerFactory.getLogger(EmailTemplateConsumer::class.java)
+//        }
+//    }
+//}
+
 
 fun main(args: Array<String>) {
     runApplication<TemplateConsumerApplication>(*args)
