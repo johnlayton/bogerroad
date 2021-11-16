@@ -9,7 +9,10 @@ pluginManagement {
 rootProject.name = "bulk"
 
 include(
+    "bulk-multi",
     "bulk-plan:api",
+    "bulk-plan:common",
+    "bulk-plan:engine",
     "bulk-trace:api",
     "bulk-stream",
     "bulk-cloud:template-consumer"

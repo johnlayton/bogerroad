@@ -24,6 +24,14 @@ initdbScripts:
     GRANT ALL PRIVILEGES ON DATABASE bulk_stream TO dbuser;
     ALTER DATABASE bulk_stream OWNER TO dbuser;
 
+    CREATE DATABASE bulk_plan_api;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_plan_api TO dbuser;
+    ALTER DATABASE bulk_plan_api OWNER TO dbuser;
+
+    CREATE DATABASE bulk_plan_engine;
+    GRANT ALL PRIVILEGES ON DATABASE bulk_plan_engine TO dbuser;
+    ALTER DATABASE bulk_plan_engine OWNER TO dbuser;
+
     CREATE DATABASE bulk_multi_1;
     GRANT ALL PRIVILEGES ON DATABASE bulk_multi_1 TO dbuser;
     ALTER DATABASE bulk_multi_1 OWNER TO dbuser;

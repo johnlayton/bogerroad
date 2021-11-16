@@ -51,29 +51,41 @@ k8s_resource(new_name='postgresql', workload='postgresql-postgresql', port_forwa
 # k8s_yaml('tilt/otel/kubernetes-otel-demo.yaml')
 # k8s_resource('otel', port_forwards=['4317:4317','9411:9411', '16686:16686'])
 
-k8s_yaml('tilt/kafka/kubernetes-zookeeper.yaml')
-k8s_resource('zookeeper', port_forwards=['2181:2181'])
-
-k8s_yaml('tilt/kafka/kubernetes-kafka.yaml')
-k8s_resource('kafka', port_forwards=['9092'])
-
-k8s_yaml('tilt/kafka/kubernetes-kafka-manager.yaml')
-k8s_resource('kafka-manager', port_forwards=['9000', '9999'])
+# k8s_yaml('tilt/kafka/kubernetes-zookeeper.yaml')
+# k8s_resource('zookeeper', port_forwards=['2181:2181'])
+#
+# k8s_yaml('tilt/kafka/kubernetes-kafka.yaml')
+# k8s_resource('kafka', port_forwards=['9092'])
+#
+# k8s_yaml('tilt/kafka/kubernetes-kafka-manager.yaml')
+# k8s_resource('kafka-manager', port_forwards=['9000', '9999'])
 
 k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
 k8s_resource('rabbitmq', port_forwards='15672')
 
-custom_build('bulk-stream',
-    './gradlew --no-daemon bulk-stream:bootBuildImage --imageName=$EXPECTED_REF',
-    deps=['bulk-stream/src'])
-k8s_yaml('tilt/stream/kubernetes-application.yaml')
-k8s_resource('bulk-stream', port_forwards=['6565:6565', '8080:8080'])
+custom_build('bulk-plan-api',
+    './gradlew --no-daemon bulk-plan:api:bootBuildImage --imageName=$EXPECTED_REF',
+    deps=['bulk-plan/api/src'])
+k8s_yaml('tilt/plan/api/kubernetes-application.yaml')
+k8s_resource('bulk-plan-api', port_forwards=['6565:6565', '8080:8080'])
 
-custom_build('bulk-cloud-template-consumer',
-    './gradlew --no-daemon bulk-cloud:template-consumer:bootBuildImage --imageName=$EXPECTED_REF',
-    deps=['bulk-cloud/template-consumer/src'])
-k8s_yaml('tilt/cloud/template-consumer/kubernetes-application.yaml')
-k8s_resource('bulk-cloud-template-consumer', port_forwards=['8084:8080'])
+custom_build('bulk-plan-engine',
+             './gradlew --no-daemon bulk-plan:engine:bootBuildImage --imageName=$EXPECTED_REF',
+             deps=['bulk-plan/engine/src'])
+k8s_yaml('tilt/plan/engine/kubernetes-application.yaml')
+k8s_resource('bulk-plan-engine')
+
+# custom_build('bulk-stream',
+#     './gradlew --no-daemon bulk-stream:bootBuildImage --imageName=$EXPECTED_REF',
+#     deps=['bulk-stream/src'])
+# k8s_yaml('tilt/stream/kubernetes-application.yaml')
+# k8s_resource('bulk-stream', port_forwards=['6565:6565', '8080:8080'])
+
+# custom_build('bulk-cloud-template-consumer',
+#     './gradlew --no-daemon bulk-cloud:template-consumer:bootBuildImage --imageName=$EXPECTED_REF',
+#     deps=['bulk-cloud/template-consumer/src'])
+# k8s_yaml('tilt/cloud/template-consumer/kubernetes-application.yaml')
+# k8s_resource('bulk-cloud-template-consumer')
 
 # custom_build('bulk-trigger',
 #     'cd bulk-trigger && ./gradlew --no-daemon bootBuildImage --imageName=$EXPECTED_REF',

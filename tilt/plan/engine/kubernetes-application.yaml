@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-plan-engine
+  labels:
+    app: bulk-plan-engine
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bulk-plan-engine
+  template:
+    metadata:
+      labels:
+        app: bulk-plan-engine
+    spec:
+      containers:
+      - name: bulk-plan-engine
+        image: bulk-plan-engine

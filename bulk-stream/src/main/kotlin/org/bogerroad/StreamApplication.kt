@@ -292,7 +292,8 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
                 .build()
             amqpAdmin.declareQueue(q)
 
-            val b: Binding = BindingBuilder.bind(q)
+            val b: Binding = BindingBuilder
+                .bind(q)
                 .to(ex)
                 .with("bulk-message-email-queue")
                 .noargs()

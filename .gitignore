@@ -7,6 +7,8 @@
 /bulk-trigger/build/
 /bulk-multi/build/
 /bulk-plan/api/build/
+/bulk-plan/common/build/
+/bulk-plan/engine/build/
 /bulk-trace/api/build/
 /bulk-trace/api/.gradle
 /bulk-cloud/template-consumer/build

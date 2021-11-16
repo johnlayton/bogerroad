@@ -1,40 +1,60 @@
-import org.jetbrains.kotlin.kapt3.base.Kapt.kapt
-import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+//import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+//import com.google.protobuf.gradle.*
 
 plugins {
     id("java")
+/*
     id("org.springframework.boot")
-    id("io.spring.dependency-management")
+*/
 /*
     TODO: Add native image support
     id("org.springframework.experimental.aot") version "0.10.0"
 */
+/*
+    id("io.spring.dependency-management")
+    id("com.google.protobuf") version "0.8.16"
+*/
+
     kotlin("jvm")
+/*
     kotlin("plugin.spring")
     kotlin("plugin.jpa") version "1.5.21"
-    kotlin("kapt")
+    kotlin("plugin.serialization") version "1.5.20"
+*/
 }
+
+/*
+java {
+    targetCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+    sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
+}
+*/
 
 repositories {
     maven("https://repo.spring.io/release")
+    maven("https://packages.confluent.io/maven/")
     mavenCentral()
 }
 
 dependencies {
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.4")
+/*
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-quartz")
-
+    implementation("org.springframework.boot:spring-boot-starter-amqp")
+    implementation("org.springframework.kafka:spring-kafka")
     implementation("org.springframework.data:spring-data-commons")
-
+    implementation("org.mariadb.jdbc:mariadb-java-client:1.5.7")
     implementation("org.postgresql:postgresql:42.2.18")
-
+    implementation("io.github.lognet:grpc-spring-boot-starter:4.5.0")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
-
+    implementation("com.github.spullara.mustache.java:compiler:0.9.10")
+    implementation("com.jayway.jsonpath:json-path")
     implementation(kotlin("reflect"))
-
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+*/
+//    implementation("com.github.thake.avro4k:avro4k-kafka-serializer:0.13.0")
+//    implementation("com.h2database:h2")
 }
 
 /*
@@ -45,12 +65,12 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 }
 */
 
-allOpen {
-    annotation("javax.persistence.Entity")
+//allOpen {
+//    annotation("javax.persistence.Entity")
 //    annotation("javax.persistence.Embeddable")
 //    annotation("javax.persistence.MappedSuperclass")
-}
-
+//}
+//
 //protobuf {
 //    protoc {
 //        artifact = "com.google.protobuf:protoc:3.14.0"

@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bulk-plan-api
+  labels:
+    app: bulk-plan-api
+spec:
+  selector:
+    matchLabels:
+      app: bulk-plan-api
+  template:
+    metadata:
+      labels:
+        app: bulk-plan-api
+    spec:
+      containers:
+      - name: bulk-plan-api
+        image: bulk-plan-api

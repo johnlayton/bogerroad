@@ -1,0 +1,5 @@
+${AnsiColor.BRIGHT_RED}
+=======================================
+== Bulk Planning Api Application
+=======================================
+${AnsiColor.DEFAULT}
