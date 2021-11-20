@@ -8,13 +8,22 @@ option java_package = "org.bogerroad";
 
 service PlanningService {
   rpc Create (PlanRequest) returns (PlanResponse) {}
+  rpc Follow (FollowRequest) returns (stream FollowResponse) {}
 }
 
 message PlanRequest {
-//  string template = 1;
 }
 
 message PlanResponse {
   string reference = 1;
+}
+
+message FollowRequest {
+  string reference = 1;
+}
+
+message FollowResponse {
+  string reference = 1;
+  string details = 2;
 }
 

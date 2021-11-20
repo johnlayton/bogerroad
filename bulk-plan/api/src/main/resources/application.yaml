@@ -5,13 +5,6 @@ grpc:
   enableReflection: true
   port: 6565
 
-#  datasource:
-#    driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://mariadb:3306/bulk-application
-#    username: dbuser
-#    password: dbpass
-
-#      hibernate.dialect: org.hibernate.dialect.MariaDB103Dialect
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -31,27 +24,3 @@ spring:
     template:
       exchange: planning
       routing-key: create
-#  kafka:
-#    bootstrap-servers: kafka:9092
-#    consumer:
-#      bootstrap-servers: kafka:9092
-#      group-id: group_id
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#      properties:
-#        spring.json.trusted.packages: "org.bogerroad"
-#    producer:
-#      bootstrap-servers: kafka:9092
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#    template:
-#      default-topic: topic1
-
-
-#      value-deserializer: org.bogerroad.EmailMessageSerializer
-#      value-serializer: org.bogerroad.EmailMessageSerializer
-#      value-serializer: com.github.thake.kafka.avro4k.serializer.KafkaAvro4kSerializer
-#      value-deserializer: com.github.thake.kafka.avro4k.serializer.KafkaAvro4kDeserializer
-#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

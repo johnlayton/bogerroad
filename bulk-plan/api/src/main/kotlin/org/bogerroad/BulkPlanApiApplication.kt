@@ -23,9 +23,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.data.web.JsonPath
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.Optional
 import java.util.UUID
 import javax.annotation.PostConstruct
@@ -36,6 +40,7 @@ import javax.persistence.Table
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
+
 
 @SpringBootApplication
 class BulkPlanApiApplication {
@@ -56,16 +61,22 @@ data class Plan(
         strategy = "org.hibernate.id.UUIDGenerator"
     )
     val id: String = UUID.randomUUID().toString(),
-    val route: String? = null
-) {
-}
+    val routing: String? = null
+)
 
-interface PlanRepository : JpaRepository<Plan, String>, JpaSpecificationExecutor<Plan>
+interface PlanRepository : JpaRepository<Plan, String>, JpaSpecificationExecutor<Plan> {
+    @Modifying
+    @Query("update Plan plan set plan.routing = :routing where plan.id = :id")
+    fun addRouting(
+        @Param("id") id: String,
+        @Param("routing") routing: String
+    ): Int
+}
 
 @Service
 class PlanService(private val repository: PlanRepository) {
     fun save(planning: Plan): Plan = repository.save(planning);
-    fun findById(id: String): Optional<Plan> = repository.findById(id);
+    fun addRouting(id: String, routing: String) = repository.addRouting(id, routing)
 }
 
 @GRpcService
@@ -76,17 +87,18 @@ class MessageStreamService(
 
     override fun create(request: PlanRequest, responseObserver: StreamObserver<PlanResponse>) {
         logger.info("Planning Request {}", StructuredArguments.v("request", request))
-        val planning = service.save(Plan())
-        amqpTemplate.convertAndSend(
-            "create", CreatePlan(
-                reference = planning.id
+        service.save(Plan()).also { plan ->
+            amqpTemplate.convertAndSend(
+                "create", CreatePlan(
+                    reference = plan.id
+                )
             )
-        )
-        val response = PlanResponse.newBuilder()
-            .setReference(planning.id)
-            .build()
-        responseObserver.onNext(response)
-        responseObserver.onCompleted()
+            val response = PlanResponse.newBuilder()
+                .setReference(plan.id)
+                .build()
+            responseObserver.onNext(response)
+            responseObserver.onCompleted()
+        }
     }
 
     companion object {
@@ -124,8 +136,8 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
             logger.info(
                 "Creating directExchange: exchange={}, routingKey={}",
                 StructuredArguments.v("exchange", "planning"),
-                StructuredArguments.v("routingKey", "create"),
-                StructuredArguments.v("routingKey", "created")
+                StructuredArguments.v("createRoutingKey", "create"),
+                StructuredArguments.v("createdRoutingKey", "created")
             )
 
             val ex =
@@ -165,7 +177,6 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
     }
 }
 
-/*
 interface CreatedPlanProjection {
     @get:JsonPath("$.reference")
     val reference: String
@@ -180,15 +191,16 @@ class RabbitComponent(val service: PlanService) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @RabbitListener(queues = ["created"])
+    @Transactional
     fun projection(projection: CreatedPlanProjection) {
         logger.info("=========================================================")
         logger.info("Plan Created:")
         logger.info("\tReference: {}", StructuredArguments.v("reference", projection.reference))
         logger.info("\tRouting: {}", StructuredArguments.v("routing", projection.routing))
         logger.info("=========================================================")
+        service.addRouting(projection.reference, projection.routing)
     }
 }
-*/
 
 class LoggerDelegate<in R : Any> : ReadOnlyProperty<R, Logger> {
     override fun getValue(thisRef: R, property: KProperty<*>) =

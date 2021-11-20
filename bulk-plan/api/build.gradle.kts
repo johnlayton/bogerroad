@@ -31,9 +31,7 @@ repositories {
 }
 
 dependencies {
-
     implementation(project(":bulk-plan:common"))
-
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-amqp")
@@ -47,8 +45,6 @@ dependencies {
     implementation("com.jayway.jsonpath:json-path")
     implementation(kotlin("reflect"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
-//    implementation("com.github.thake.avro4k:avro4k-kafka-serializer:0.13.0")
-//    implementation("com.h2database:h2")
 }
 
 /*
