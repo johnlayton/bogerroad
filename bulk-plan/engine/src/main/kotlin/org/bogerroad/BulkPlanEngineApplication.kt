@@ -269,7 +269,7 @@ fun rooms(): List<Room> =
     }
 
 fun lessons(): List<Lesson> = listOf(
-    Lesson(0L, "Math", "A. Turing", "9th grade"),
+    Lesson(0, "Math", "A. Turing", "9th grade"),
     Lesson(1, "Math", "A. Turing", "9th grade"),
     Lesson(2, "Physics", "M. Curie", "9th grade"),
     Lesson(3, "Chemistry", "M. Curie", "9th grade"),
