@@ -46,12 +46,12 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.companionObject
 
 @SpringBootApplication
-class BulkPlanApiApplication {
+class BulkPlanEngineApplication {
 
 }
 
 fun main(args: Array<String>) {
-    runApplication<BulkPlanApiApplication>(*args)
+    runApplication<BulkPlanEngineApplication>(*args)
 }
 
 @ConfigurationProperties(prefix = "engine")

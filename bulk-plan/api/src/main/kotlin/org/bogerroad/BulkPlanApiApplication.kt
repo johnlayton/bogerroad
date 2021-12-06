@@ -3,6 +3,7 @@ package org.bogerroad
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.grpc.stub.StreamObserver
 import net.logstash.logback.argument.StructuredArguments
+import net.logstash.logback.argument.StructuredArguments.v
 import org.hibernate.annotations.GenericGenerator
 import org.lognet.springboot.grpc.GRpcService
 import org.slf4j.Logger
@@ -86,7 +87,7 @@ class MessageStreamService(
 ) : PlanningServiceGrpc.PlanningServiceImplBase() {
 
     override fun create(request: PlanRequest, responseObserver: StreamObserver<PlanResponse>) {
-        logger.info("Planning Request {}", StructuredArguments.v("request", request))
+        logger.info("Planning Request {}", v("request", request))
         service.save(Plan()).also { plan ->
             amqpTemplate.convertAndSend(
                 "create", CreatePlan(
@@ -135,9 +136,9 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
         try {
             logger.info(
                 "Creating directExchange: exchange={}, routingKey={}",
-                StructuredArguments.v("exchange", "planning"),
-                StructuredArguments.v("createRoutingKey", "create"),
-                StructuredArguments.v("createdRoutingKey", "created")
+                v("exchange", "planning"),
+                v("createRoutingKey", "create"),
+                v("createdRoutingKey", "created")
             )
 
             val ex =
@@ -172,7 +173,7 @@ class RabbitConfiguration(val amqpAdmin: AmqpAdmin) {
 
             logger.info("Binding successfully created.")
         } catch (e: Exception) {
-            logger.error("Exception when initializing RabbitMQ: {}", StructuredArguments.v("message", e.message))
+            logger.error("Exception when initializing RabbitMQ: {}", v("message", e.message))
         }
     }
 }
@@ -195,8 +196,8 @@ class RabbitComponent(val service: PlanService) {
     fun projection(projection: CreatedPlanProjection) {
         logger.info("=========================================================")
         logger.info("Plan Created:")
-        logger.info("\tReference: {}", StructuredArguments.v("reference", projection.reference))
-        logger.info("\tRouting: {}", StructuredArguments.v("routing", projection.routing))
+        logger.info("\tReference: {}", v("reference", projection.reference))
+        logger.info("\tRouting: {}", v("routing", projection.routing))
         logger.info("=========================================================")
         service.addRouting(projection.reference, projection.routing)
     }
