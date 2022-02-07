@@ -108,7 +108,7 @@ class RabbitConfiguration(
     @Bean
     fun jsonMessageConverter(objectMapper: ObjectMapper, classMapper: ClassMapper): Jackson2JsonMessageConverter {
         return Jackson2JsonMessageConverter(objectMapper).also { converter ->
-            converter.setClassMapper(classMapper)
+            converter.classMapper = classMapper
             converter.setUseProjectionForInterfaces(true)
         }
     }
