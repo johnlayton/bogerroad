@@ -1,5 +1,5 @@
 ## Welcome to BogerRoad GitHub Pages
 
-Generated 2022-02-07T03:25:54.870617
+Generated 2022-02-11T00:58:22.96701
 
 [Open Api Spec](./openapi.yaml)
