@@ -1,63 +1,90 @@
-#global:
-#  postgresql:
-#    postgresqlUsername: dbuser
-#    postgresqlPassword: dbpass
-postgresqlUsername: postgres
-postgresqlPassword: postgres
-initdbUser: postgres
-initdbScripts:
-  debug.sh: |
-    #!/bin/sh
-    echo "Running the debug script"
-  init.sql: |
-    CREATE USER dbuser WITH PASSWORD 'dbpass';
+global:
+  postgresql:
+    auth:
+      postgresPassword: postgres
 
-    CREATE DATABASE bulk_trigger;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_trigger TO dbuser;
-    ALTER DATABASE bulk_trigger OWNER TO dbuser;
+auth:
+  database: postgres
 
-    CREATE DATABASE bulk_trigger_quartz;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_trigger_quartz TO dbuser;
-    ALTER DATABASE bulk_trigger_quartz OWNER TO dbuser;
+primary:
+  initdb:
+    user: postgres
+    password: postgres
+    scripts:
+      debug.sh: |
+        #!/bin/sh
+        echo "Running the debug script"
+      init.sql: |
+        CREATE USER dbuser WITH PASSWORD 'dbpass';
+        CREATE DATABASE bulk-graph-simple;
+        GRANT ALL PRIVILEGES ON DATABASE bulk_graph_simple TO dbuser;
+        ALTER DATABASE bulk_graph_simple OWNER TO dbuser;
+      complete.sh: |
+        #!/bin/sh
+        echo "Running the complete script"
 
-    CREATE DATABASE bulk_stream;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_stream TO dbuser;
-    ALTER DATABASE bulk_stream OWNER TO dbuser;
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
 
-    CREATE DATABASE bulk_plan_api;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_plan_api TO dbuser;
-    ALTER DATABASE bulk_plan_api OWNER TO dbuser;
 
-    CREATE DATABASE bulk_plan_engine;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_plan_engine TO dbuser;
-    ALTER DATABASE bulk_plan_engine OWNER TO dbuser;
-
-    CREATE DATABASE bulk_multi_1;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_multi_1 TO dbuser;
-    ALTER DATABASE bulk_multi_1 OWNER TO dbuser;
-
-    CREATE DATABASE bulk_multi_2;
-    GRANT ALL PRIVILEGES ON DATABASE bulk_multi_2 TO dbuser;
-    ALTER DATABASE bulk_multi_2 OWNER TO dbuser;
-
-    CREATE DATABASE backstage_plugin_catalog;
-    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_catalog TO dbuser;
-    ALTER DATABASE backstage_plugin_catalog OWNER TO dbuser;
-
-    CREATE DATABASE backstage_plugin_auth;
-    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_auth TO dbuser;
-    ALTER DATABASE backstage_plugin_auth OWNER TO dbuser;
-
-    CREATE DATABASE backstage_plugin_scaffolder;
-    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_scaffolder TO dbuser;
-    ALTER DATABASE backstage_plugin_scaffolder OWNER TO dbuser;
-
-#    CREATE DATABASE tooljet;
-#    GRANT ALL PRIVILEGES ON DATABASE tooljet TO dbuser;
-#    ALTER DATABASE tooljet OWNER TO dbuser;
+##global:
+##  postgresql:
+##    postgresqlUsername: dbuser
+##    postgresqlPassword: dbpass
+#postgresqlUsername: postgres
+#postgresqlPassword: postgres
+#initdbUser: postgres
+#initdbScripts:
+#  debug.sh: |
+#    #!/bin/sh
+#    echo "Running the debug script"
+#  init.sql: |
+#    CREATE USER dbuser WITH PASSWORD 'dbpass';
 #
-#    CREATE EXTENSION IF NOT EXISTS "pgcrypto"
-  complete.sh: |
-    #!/bin/sh
-    echo "Running the complete script"
+#    CREATE DATABASE bulk_trigger;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_trigger TO dbuser;
+#    ALTER DATABASE bulk_trigger OWNER TO dbuser;
+#
+#    CREATE DATABASE bulk_trigger_quartz;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_trigger_quartz TO dbuser;
+#    ALTER DATABASE bulk_trigger_quartz OWNER TO dbuser;
+#
+#    CREATE DATABASE bulk_stream;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_stream TO dbuser;
+#    ALTER DATABASE bulk_stream OWNER TO dbuser;
+#
+#    CREATE DATABASE bulk_plan_api;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_plan_api TO dbuser;
+#    ALTER DATABASE bulk_plan_api OWNER TO dbuser;
+#
+#    CREATE DATABASE bulk_plan_engine;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_plan_engine TO dbuser;
+#    ALTER DATABASE bulk_plan_engine OWNER TO dbuser;
+#
+#    CREATE DATABASE bulk_multi_1;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_multi_1 TO dbuser;
+#    ALTER DATABASE bulk_multi_1 OWNER TO dbuser;
+#
+#    CREATE DATABASE bulk_multi_2;
+#    GRANT ALL PRIVILEGES ON DATABASE bulk_multi_2 TO dbuser;
+#    ALTER DATABASE bulk_multi_2 OWNER TO dbuser;
+#
+#    CREATE DATABASE backstage_plugin_catalog;
+#    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_catalog TO dbuser;
+#    ALTER DATABASE backstage_plugin_catalog OWNER TO dbuser;
+#
+#    CREATE DATABASE backstage_plugin_auth;
+#    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_auth TO dbuser;
+#    ALTER DATABASE backstage_plugin_auth OWNER TO dbuser;
+#
+#    CREATE DATABASE backstage_plugin_scaffolder;
+#    GRANT ALL PRIVILEGES ON DATABASE backstage_plugin_scaffolder TO dbuser;
+#    ALTER DATABASE backstage_plugin_scaffolder OWNER TO dbuser;
+#
+##    CREATE EXTENSION IF NOT EXISTS "pgcrypto"
+#  complete.sh: |
+#    #!/bin/sh
+#    echo "Running the complete script"
 

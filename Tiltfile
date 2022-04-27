@@ -9,7 +9,166 @@ load('ext://pack', 'pack')
 # tilt_inspector()
 analytics_settings(enable=False)
 
-#helm_remote('mysql',
+docker_prune_settings(num_builds=2, max_age_mins=30, keep_recent=2)
+
+# update_settings(suppress_unused_image_warnings=["timetable-service"])
+# update_settings(suppress_unused_image_warnings=["fluentd"])
+update_settings(max_parallel_updates=3, k8s_upsert_timeout_secs=240)
+
+os.putenv('TILT_CACHE_DIR', os.path.abspath('./.tilt-cache'))
+os.putenv('TILT_HELM_REMOTE_CACHE_DIR', os.path.abspath('./.tilt-helm'))
+os.putenv('TILT_COREOS_PROMETHEUS_TEMP_DIR', os.path.abspath('./.tilt-coreos'))
+
+load('ext://configmap', 'configmap_create', 'configmap_from_dict')
+load('ext://secret', 'secret_yaml_generic', 'secret_from_dict')
+load('ext://pack', 'pack')
+load('ext://helm_remote', 'helm_remote')
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+load('ext://namespace', 'namespace_create')
+load('ext://coreos_prometheus', 'setup_monitoring', 'get_prometheus_resources', 'get_prometheus_dependencies')
+load('ext://cert_manager', 'deploy_cert_manager')
+
+###
+# Setup Certificate Manager
+###
+
+deploy_cert_manager()
+
+###
+# Setup Helm Repository
+###
+
+helm_repo('bitnami', 'https://charts.bitnami.com/bitnami')
+# helm_repo('codecentric', 'https://codecentric.github.io/helm-charts')
+
+###
+# Setup Prometheus
+###
+
+setup_monitoring()
+
+###
+# Setup Elastic + Kibana using the Custom Resource Definition
+###
+
+namespace_create('elastic-system')
+k8s_yaml(local('curl --silent --show-error --location https://download.elastic.co/downloads/eck/2.0.0/crds.yaml',
+               quiet=True))
+k8s_yaml(local('curl --silent --show-error --location https://download.elastic.co/downloads/eck/2.0.0/operator.yaml',
+               quiet=True))
+
+k8s_yaml('tilt/elastic/elastic.yaml')
+k8s_yaml('tilt/elastic/kibana.yaml')
+
+k8s_resource(
+    new_name='elasticsearch',
+    objects=['quickstart:elasticsearch'],
+    extra_pod_selectors=[{
+        'elasticsearch.k8s.elastic.co/cluster-name': 'quickstart'
+    }],
+    resource_deps=['elastic-operator'],
+    port_forwards=9200
+)
+k8s_resource(
+    new_name='kibana',
+    objects=['quickstart:kibana'],
+    extra_pod_selectors=[{
+        'kibana.k8s.elastic.co/name': 'quickstart'
+    }],
+    labels=['logging'],
+    resource_deps=['elastic-operator', 'elasticsearch'],
+    port_forwards=5601
+)
+local_resource(
+    'kibana-password',
+    'echo "    USER: elastic";' +
+    'echo "PASSWORD: $(kubectl get secret quickstart-es-elastic-user -o=jsonpath="{.data.elastic}" | base64 --decode)";',
+    trigger_mode=TRIGGER_MODE_MANUAL,
+    labels=['logging'],
+    auto_init=False
+)
+
+docker_build('thirdparty/fluentd', 'tilt/fluentd')
+k8s_yaml('tilt/fluentd/fluentd-config.yaml')
+k8s_yaml('tilt/fluentd/fluentd-rbac.yaml')
+k8s_yaml('tilt/fluentd/fluentd-daemonset.yaml')
+
+###
+# Setup Tracing
+###
+
+# namespace_create('cert-manager')
+# k8s_yaml(local('curl --silent --show-error --location https://github.com/cert-manager/cert-manager/releases/download/v1.6.2/cert-manager.yaml'))
+
+namespace_create('observability')
+k8s_yaml(local(
+    'curl --silent --show-error --location https://github.com/jaegertracing/jaeger-operator/releases/download/v1.31.0/jaeger-operator.yaml'))
+
+k8s_yaml('tilt/jaeger/jaeger.yaml')
+
+k8s_resource(
+    new_name='jaeger',
+    objects=['simplest:jaeger'],
+    extra_pod_selectors=[{
+        'app.kubernetes.io/name': 'simplest'
+    }],
+    labels=['tracing'],
+    resource_deps=['jaeger-operator'],
+    port_forwards=['16686', '9411']
+)
+
+###
+# Setup PostgreSQL
+###
+
+# helm_remote('postgresql',
+#             repo_name='bitnami',
+#             repo_url='https://charts.bitnami.com/bitnami',
+#             values='tilt/postgresql/kubernetes-postgresql-values.yaml')
+helm_resource(
+    'postgresql',
+    'bitnami/postgresql',
+    flags=[
+        '-f', './tilt/postgresql/kubernetes-postgresql-values.yaml',
+    ],
+    labels=['external-services'],
+    resource_deps=get_prometheus_dependencies()
+)
+k8s_resource(
+    'postgresql',
+    port_forwards=['5432:5432']
+)
+
+###
+# Setup GraphQL
+###
+
+custom_build(
+    'bulk-graph-simple',
+    './gradlew --parallel bulk-graph:simple:bootBuildImage --imageName=$EXPECTED_REF',
+    deps=['bulk-graph/simple/src', 'bulk-graph/simple/build.gradle']
+)
+helm_resource(
+    'bulk-graph-simple',
+    'charts/springboot',
+    image_deps=['bulk-graph-simple'],
+    image_keys=[
+        ('image.repository', 'image.tag')
+    ],
+    flags=[
+        '-f', './tilt/graph/simple/values.yaml',
+    ],
+    labels=['graph'],
+    resource_deps=get_prometheus_dependencies()
+)
+k8s_resource(
+    'bulk-graph-simple',
+    port_forwards=['8080:8080', '8081:8081'],
+    trigger_mode=TRIGGER_MODE_MANUAL,
+    resource_deps=get_prometheus_dependencies()
+)
+
+# helm_remote('mysql',
 #            repo_name='stable',
 #            repo_url='https://charts.helm.sh/stable')
 
@@ -25,14 +184,14 @@ analytics_settings(enable=False)
 #             values='tilt/mailhog/kubernetes-mailhog-values.yaml')
 # k8s_resource(new_name='mailhog', workload='mailhog', port_forwards=['8025:8025', '1025:1025'])
 
-k8s_yaml('tilt/mailhog/kubernetes-mailhog-application.yaml')
-k8s_resource('mailhog', port_forwards=['1025:1025', '8025:8025'])
-
-helm_remote('postgresql',
-            repo_name='bitnami',
-            repo_url='https://charts.bitnami.com/bitnami',
-            values='tilt/postgresql/kubernetes-postgresql-values.yaml')
-k8s_resource(new_name='postgresql', workload='postgresql-postgresql', port_forwards=['5432:5432'])
+# k8s_yaml('tilt/mailhog/kubernetes-mailhog-application.yaml')
+# k8s_resource('mailhog', port_forwards=['1025:1025', '8025:8025'])
+#
+# helm_remote('postgresql',
+#             repo_name='bitnami',
+#             repo_url='https://charts.bitnami.com/bitnami',
+#             values='tilt/postgresql/kubernetes-postgresql-values.yaml')
+# k8s_resource(new_name='postgresql', workload='postgresql-postgresql', port_forwards=['5432:5432'])
 
 # helm_remote('jaeger',
 #             repo_name='jaegertracing',
@@ -60,20 +219,20 @@ k8s_resource(new_name='postgresql', workload='postgresql-postgresql', port_forwa
 # k8s_yaml('tilt/kafka/kubernetes-kafka-manager.yaml')
 # k8s_resource('kafka-manager', port_forwards=['9000', '9999'])
 
-k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
-k8s_resource('rabbitmq', port_forwards='15672')
+# k8s_yaml('tilt/rabbitmq/kubernetes-rabbitmq.yaml')
+# k8s_resource('rabbitmq', port_forwards='15672')
 
-custom_build('bulk-plan-api',
-    './gradlew --no-daemon bulk-plan:api:bootBuildImage --imageName=$EXPECTED_REF',
-    deps=['bulk-plan/api/src'])
-k8s_yaml('tilt/plan/api/kubernetes-application.yaml')
-k8s_resource('bulk-plan-api', port_forwards=['6565:6565', '8080:8080'])
-
-custom_build('bulk-plan-engine',
-             './gradlew --no-daemon bulk-plan:engine:bootBuildImage --imageName=$EXPECTED_REF',
-             deps=['bulk-plan/engine/src'])
-k8s_yaml('tilt/plan/engine/kubernetes-application.yaml')
-k8s_resource('bulk-plan-engine')
+# custom_build('bulk-plan-api',
+#     './gradlew --no-daemon bulk-plan:api:bootBuildImage --imageName=$EXPECTED_REF',
+#     deps=['bulk-plan/api/src'])
+# k8s_yaml('tilt/plan/api/kubernetes-application.yaml')
+# k8s_resource('bulk-plan-api', port_forwards=['6565:6565', '8080:8080'])
+#
+# custom_build('bulk-plan-engine',
+#              './gradlew --no-daemon bulk-plan:engine:bootBuildImage --imageName=$EXPECTED_REF',
+#              deps=['bulk-plan/engine/src'])
+# k8s_yaml('tilt/plan/engine/kubernetes-application.yaml')
+# k8s_resource('bulk-plan-engine')
 
 # custom_build('bulk-stream',
 #     './gradlew --no-daemon bulk-stream:bootBuildImage --imageName=$EXPECTED_REF',

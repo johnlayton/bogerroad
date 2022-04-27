@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+data:
+  fluent.conf: |
+    ###
+    # The FluentD configuration file for the current hand rolled fluentd image used in the daemonset.
+    # Compatible with;
+    #     fluent/fluentd:v1.14.5-debian-1.0
+    # Configuration documentation;
+    #     https://docs.fluentd.org/configuration
+    ###
+    ###
+    # Timetable and Engine service applications uses structured json logging
+    # Configuration details;
+    #     https://github.com/fluent/fluent-plugin-parser-cri
+    #     https://docs.fluentd.org/parser/json
+    ###
+    <source>
+      @type tail
+      @id in_tail_service_container_logs
+      path "/var/log/containers/*service*.log"
+      pos_file "/var/log/fluentd-service-containers.log.pos"
+      tag "kubernetes.*"
+      exclude_path ["/var/log/containers/*fluentd*"]
+      read_from_head true
+      <parse>
+        @type cri
+      </parse>
+    </source>
+    <filter kubernetes.**>
+      @type concat
+      @id containerd_concat
+      key message
+      use_partial_cri_logtag true
+      partial_cri_logtag_key logtag
+      partial_cri_stream_key stream
+    </filter>
+    <filter kubernetes.**>
+      @type parser
+      key_name message
+      <parse>
+        @type json
+        time_key time
+        time_format %Y-%m-%dT%H:%M:%S.%L%z
+        # keep_time_key true
+      </parse>
+    </filter>
+    ###
+    # Record transformer to change the application json.
+    # Configuration details;
+    #     https://docs.fluentd.org/filter/record_transformer
+    # from ...
+    # { "key" : "value" }
+    # ... to ...
+    # { "application": { "data" : { "key" : "value" } } }
+    # ... in order to aid visual inspection in kibana
+    ###
+    <filter kubernetes.**>
+      @type record_transformer
+      @id transform_application_logging
+      enable_ruby true
+      renew_record true
+      <record>
+        application ${ { data: record } }
+      </record>
+    </filter>
+    ###
+    # Kubernetes metadata to add the container metadata (image, container name, namespace ...) ...
+    # Configuration details;
+    #     https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter
+    ###
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      @id filter_kube_metadata
+      kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
+      verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
+      ca_file "#{ENV['KUBERNETES_CA_FILE']}"
+      skip_labels "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_LABELS'] || 'false'}"
+      skip_container_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_CONTAINER_METADATA'] || 'false'}"
+      skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
+      skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
+      watch "#{ENV['FLUENT_KUBERNETES_WATCH'] || 'true'}"
+    </filter>
+    <match **>
+      @type elasticsearch
+      @id out_es
+      @log_level "info"
+      include_tag_key true
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+      path "#{ENV['FLUENT_ELASTICSEARCH_PATH']}"
+      scheme "#{ENV['FLUENT_ELASTICSEARCH_SCHEME'] || 'http'}"
+      ssl_verify "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERIFY'] || 'true'}"
+      ssl_version "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERSION'] || 'TLSv1_2'}"
+      user "#{ENV['FLUENT_ELASTICSEARCH_USER'] || use_default}"
+      password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD'] || use_default}"
+      reload_connections false
+      reconnect_on_error true
+      reload_on_failure true
+      log_es_400_reason false
+      logstash_dateformat "%Y.%m.%d"
+      logstash_format false
+      index_name fluentd.timetable.test.service.jsonlogs
+      type_name fluentd.timetable.test.service.jsonlogs
+      target_index_key
+      include_timestamp true
+      template_name
+      template_file
+      template_overwrite false
+      request_timeout 5s
+      application_name default
+      suppress_type_name true
+      enable_ilm false
+      ilm_policy_id logstash-policy
+      ilm_policy {}
+      ilm_policy_overwrite false
+      <buffer>
+        flush_thread_count 8
+        flush_interval 5s
+        chunk_limit_size 2M
+        queue_limit_length 32
+        retry_max_interval 30
+        retry_forever true
+      </buffer>
+    </match>
+
