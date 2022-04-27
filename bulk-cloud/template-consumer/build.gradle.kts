@@ -21,11 +21,13 @@ java {
     sourceCompatibility = JavaVersion.VERSION_11
 }
 
+/*
 repositories {
     maven("https://repo.spring.io/release")
     maven("https://repo.spring.io/snapshot")
     mavenCentral()
 }
+*/
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
