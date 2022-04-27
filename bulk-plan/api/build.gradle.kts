@@ -24,11 +24,13 @@ java {
 }
 */
 
+/*
 repositories {
     maven("https://repo.spring.io/release")
     maven("https://packages.confluent.io/maven/")
     mavenCentral()
 }
+*/
 
 dependencies {
     implementation(project(":bulk-plan:common"))

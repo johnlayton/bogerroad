@@ -2,7 +2,6 @@ package org.bogerroad
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.grpc.stub.StreamObserver
-import net.logstash.logback.argument.StructuredArguments
 import net.logstash.logback.argument.StructuredArguments.v
 import org.hibernate.annotations.GenericGenerator
 import org.lognet.springboot.grpc.GRpcService
@@ -31,7 +30,6 @@ import org.springframework.data.web.JsonPath
 import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.Optional
 import java.util.UUID
 import javax.annotation.PostConstruct
 import javax.persistence.Entity
