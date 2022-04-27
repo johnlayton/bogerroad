@@ -1,11 +1,13 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "2.5.3" apply false
+    id("org.springframework.boot") version "2.7.0-SNAPSHOT" apply false
     id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
 
     id("com.github.johnrengelman.processes") version "0.5.0" apply false
     id("org.springdoc.openapi-gradle-plugin") version "1.3.2" apply false
     id("com.gorylenko.gradle-git-properties") version "2.3.1" apply false
+
+    id("com.github.ben-manes.versions") version "0.41.0"
 
 //	id("com.palantir.git-version") version "0.12.3"
     id("fr.brouillard.oss.gradle.jgitver") version "0.10.0-rc03"
@@ -15,6 +17,7 @@ plugins {
 
     id("github") apply false
 }
+
 
 java {
     targetCompatibility = JavaVersion.VERSION_11
