@@ -28,5 +28,7 @@ include(
 //    "bulk-trace:api",
 //    "bulk-stream",
 //    "bulk-cloud:template-consumer",
-    "bulk-graph:simple"
+    "bulk-graph:simple",
+    "bulk-auth:server",
+    "bulk-auth:client"
 )
