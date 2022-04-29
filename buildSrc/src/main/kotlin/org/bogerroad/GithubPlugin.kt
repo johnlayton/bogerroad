@@ -1,6 +1,7 @@
 package org.bogerroad
 
 import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -25,12 +26,22 @@ class GithubPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         val github = project.extensions.create<GithubExtension>("GithubExtension")
         project.extensions.add("github", github)
-        val task1 = project.tasks.register<Copy>("github-pages-openapi-spec") {
-            group = "documentation"
-            description = "Copy github documentation from the generated openapi.yaml"
-            dependsOn(project.tasks.findByName("generateOpenApiDocs"))
-            from(layout.buildDirectory.file("openapi.yaml"))
-            into(layout.buildDirectory.dir("docs"))
+        val task1 = if (project.tasks.any { "generateOpenApiDocs".equals(name) }) {
+            project.tasks.register<Copy>("github-pages-openapi-spec") {
+                group = "documentation"
+                description = "Copy github documentation from the generated openapi.yaml"
+                dependsOn(project.tasks.findByName("generateOpenApiDocs"))
+                from(layout.buildDirectory.file("openapi.yaml"))
+                into(layout.buildDirectory.dir("docs"))
+            }
+        } else {
+            project.tasks.register<DefaultTask>("github-pages-openapi-spec") {
+                group = "documentation"
+                description = "Copy github documentation from the generated openapi.yaml"
+                doLast {
+                    logger.warn("Do Nothing No OpenAPI")
+                }
+            }
         }
         val task2 = project.tasks.register<Copy>("github-pages-placeholder") {
             group = "documentation"
