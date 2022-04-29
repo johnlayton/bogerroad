@@ -1,0 +1,5 @@
+${AnsiColor.BRIGHT_RED}
+===============================================
+== Bulk Auth Authentication Server Application
+===============================================
+${AnsiColor.DEFAULT}

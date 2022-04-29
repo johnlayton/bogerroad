@@ -29,6 +29,7 @@ include(
 //    "bulk-stream",
 //    "bulk-cloud:template-consumer",
     "bulk-graph:simple",
-    "bulk-auth:server",
-    "bulk-auth:client"
+    "bulk-auth:auth-server",
+    "bulk-auth:res-server",
+    "bulk-auth:api-server"
 )
