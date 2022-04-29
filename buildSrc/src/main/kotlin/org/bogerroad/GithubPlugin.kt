@@ -53,7 +53,6 @@ class GithubPlugin : Plugin<Project> {
             description = "Copy github documentation from docs folder, include the generated openapi.yaml"
             dependsOn(task1, task2)
         }
-
     }
 }
 
