@@ -1,8 +1,11 @@
 /build
+/bulk-test/build/
 /bulk-auth/build/
 /bulk-auth/api-server/build/
 /bulk-auth/res-server/build/
 /bulk-auth/auth-server/build/
+/bulk-auth/login-server/build/
+/bulk-auth/login-client/build/
 /bulk-graph/simple/build/
 /bulk-stream/.gradle/
 /bulk-stream/build/

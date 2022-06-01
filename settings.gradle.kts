@@ -32,5 +32,8 @@ include(
     "bulk-auth",
     "bulk-auth:auth-server",
     "bulk-auth:res-server",
-    "bulk-auth:api-server"
+    "bulk-auth:api-server",
+    "bulk-auth:login-server",
+    "bulk-auth:login-client",
+    "bulk-test"
 )

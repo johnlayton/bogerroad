@@ -1,5 +1,3 @@
-import org.gradle.api.JavaVersion.VERSION_11
-
 //import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 //import com.google.protobuf.gradle.*
 
@@ -24,11 +22,6 @@ repositories {
     maven("https://repository.mulesoft.org/nexus/content/repositories/public")
     jcenter()
     mavenCentral()
-}
-
-java {
-    sourceCompatibility = VERSION_11
-    targetCompatibility = VERSION_11
 }
 
 dependencies {

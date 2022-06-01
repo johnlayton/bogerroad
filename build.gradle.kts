@@ -1,6 +1,8 @@
 plugins {
     id("java")
-    id("org.springframework.boot") version "2.7.0-SNAPSHOT" apply false
+//    id("org.springframework.boot") version "2.7.0-SNAPSHOT" apply false
+//    id("org.springframework.boot") version "2.5.4" apply false
+    id("org.springframework.boot") version "2.7.0" apply false
     id("io.spring.dependency-management") version "1.0.11.RELEASE" apply false
 
     id("com.github.johnrengelman.processes") version "0.5.0" apply false
@@ -12,8 +14,9 @@ plugins {
 //	id("com.palantir.git-version") version "0.12.3"
     id("fr.brouillard.oss.gradle.jgitver") version "0.10.0-rc03"
 
-    kotlin("jvm") version "1.5.10" apply false
-    kotlin("plugin.spring") version "1.5.10" apply false
+    kotlin("jvm") version "1.6.21" apply false
+    kotlin("plugin.spring") version "1.6.21" apply false
+    kotlin("kapt") version "1.6.21" apply false
 
     id("github") apply false
 }

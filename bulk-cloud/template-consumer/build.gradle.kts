@@ -16,11 +16,6 @@ plugins {
     id("github")
 }
 
-java {
-    targetCompatibility = JavaVersion.VERSION_11
-    sourceCompatibility = JavaVersion.VERSION_11
-}
-
 /*
 repositories {
     maven("https://repo.spring.io/release")
