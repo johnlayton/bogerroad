@@ -14,10 +14,11 @@ plugins {
 */
 
     kotlin("jvm")
+    kotlin("kapt")
 
     kotlin("plugin.spring")
-    kotlin("plugin.jpa") version "1.5.21"
-    kotlin("plugin.serialization") version "1.5.20"
+    kotlin("plugin.jpa") version "1.6.21"
+    kotlin("plugin.serialization") version "1.6.21"
 }
 
 /*
@@ -26,9 +27,10 @@ java {
     sourceCompatibility = org.gradle.api.JavaVersion.VERSION_1_8
 }
 */
+
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:2.7.0-SNAPSHOT")
+        mavenBom("org.springframework.boot:spring-boot-dependencies:2.7.1-SNAPSHOT")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.4")
 //        mavenBom("org.springframework.cloud:spring-cloud-sleuth-otel-dependencies:1.0.0-SNAPSHOT")
     }
@@ -46,24 +48,29 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
-    implementation("org.springframework.boot:spring-boot-starter-amqp")
+//    implementation("org.springframework.boot:spring-boot-starter-amqp")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-graphql")
-    implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.springframework.boot:spring-boot-devtools")
     implementation("org.springframework.data:spring-data-commons")
-    implementation("org.mariadb.jdbc:mariadb-java-client:1.5.7")
-    implementation("org.postgresql:postgresql:42.2.18")
+//    implementation("org.mariadb.jdbc:mariadb-java-client:1.5.7")
+//    implementation("org.postgresql:postgresql:42.3.3")
+    implementation("com.h2database:h2:2.1.212")
     implementation("net.logstash.logback:logstash-logback-encoder:6.3")
     implementation("com.github.spullara.mustache.java:compiler:0.9.10")
     implementation("com.jayway.jsonpath:json-path")
-    implementation("io.opentracing.brave:brave-opentracing")
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
-    implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
+//    implementation("io.opentracing.brave:brave-opentracing")
+//    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
+//    implementation("org.springframework.cloud:spring-cloud-sleuth-zipkin")
     implementation("com.querydsl:querydsl-core")
     implementation("com.querydsl:querydsl-jpa")
     implementation(kotlin("reflect"))
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jpa")
+    kapt("org.hibernate:hibernate-jpamodelgen:5.4.30.Final")
 }
 
 /*
@@ -102,4 +109,10 @@ allOpen {
 //    val main by getting { }
 //    main.java.srcDirs("build/generated/source/proto/main/java")
 //    main.java.srcDirs("build/generated/source/proto/main/grpc")
+//}
+
+//tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+//    kotlinOptions {
+//        jvmTarget = "17"
+//    }
 //}

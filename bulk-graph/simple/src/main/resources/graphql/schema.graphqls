@@ -1,0 +1,69 @@
+#type CompassId {
+#    workingSetId: String!
+#    entityId: String!
+#}
+#
+#input CompassIdIn {
+#    workingSetId: String!
+#    entityId: String!
+#}
+
+scalar UUID
+
+type Other {
+    id: UUID!
+    name: String!
+    colour: String!
+}
+
+input OtherIn {
+    name: String!
+    colour: String!
+}
+
+type WorkingSet {
+    id: UUID!
+    name: String!
+#    allDaysShareSamePeriods: Boolean!
+#    minDurationMinutes: Int!
+#    maxDurationMinutes: Int!
+##    schoolInfo: SchoolInfo!
+#    schoolInfo: String!
+#    statusDate: String
+#    notes: String
+#    createdDate: String
+##    duplicatedFrom: WorkingSet
+#    duplicatedFrom: String
+##    status: SubmissionStatus
+#    status: String
+#    trash: Boolean
+}
+
+#type Building {
+#    id: CompassId!
+#    name: String!
+#    description: String!
+#    rooms: [Room!]
+#}
+#
+#type Room {
+#    id: CompassId!
+#    code: String!
+#    description: String!
+#}
+
+type Query {
+    workingSet: [WorkingSet]
+#    workingSet(id : ID!): WorkingSet
+#    buildings: [Building]
+#    building(id: CompassIdIn!): Building
+#    rooms: [Room]
+#    room(id: CompassIdIn!): Room
+    others: [Other]
+}
+
+type Mutation {
+    createOther(other: OtherIn!): Other!
+    save(other: OtherIn) : Other!
+    hello(name: String!) : String!
+}
