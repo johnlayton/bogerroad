@@ -1,4 +1,5 @@
 /build
+/bulk-scratch/build/
 /bulk-test/build/
 /bulk-auth/build/
 /bulk-auth/api-server/build/

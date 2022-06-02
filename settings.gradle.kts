@@ -35,5 +35,6 @@ include(
     "bulk-auth:api-server",
     "bulk-auth:login-server",
     "bulk-auth:login-client",
+    "bulk-scratch",
     "bulk-test"
 )
