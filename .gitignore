@@ -1,6 +1,13 @@
 /build
+/bulk-graph/build/
+/bulk-graph/kickstart/build/
+/bulk-graph/webmvc-http/build/
+/bulk-cdktf/build/
+/bulk-cdktf/kotlin-aws/build/
+/bulk-cdktf/kotlin-docker/build/
 /bulk-scratch/build/
 /bulk-test/build/
+/bulk-trait/build/
 /bulk-auth/build/
 /bulk-auth/api-server/build/
 /bulk-auth/res-server/build/
@@ -25,6 +32,8 @@
 /buildSrc/build/
 /buildSrc/.gradle
 /tilt_modules/
+/.tilt-cache
+/.tilt-coreos
 /.idea/
 /.helm/
 /.gradle/
