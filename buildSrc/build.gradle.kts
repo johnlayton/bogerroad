@@ -2,12 +2,12 @@ plugins {
     `kotlin-dsl`
 }
 
-configure<KotlinDslPluginOptions> {
-    experimentalWarning.set(false)
-}
+//configure<KotlinDslPluginOptions> {
+//    experimentalWarning.set(false)
+//}
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {

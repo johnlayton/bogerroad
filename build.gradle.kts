@@ -7,24 +7,27 @@ plugins {
 
     id("com.github.johnrengelman.processes") version "0.5.0" apply false
     id("org.springdoc.openapi-gradle-plugin") version "1.3.2" apply false
-    id("com.gorylenko.gradle-git-properties") version "2.3.1" apply false
+    id("com.gorylenko.gradle-git-properties") version "2.4.1" apply false
 
     id("com.github.ben-manes.versions") version "0.41.0"
 
 //	id("com.palantir.git-version") version "0.12.3"
     id("fr.brouillard.oss.gradle.jgitver") version "0.10.0-rc03"
 
-    kotlin("jvm") version "1.6.21" apply false
-    kotlin("plugin.spring") version "1.6.21" apply false
-    kotlin("kapt") version "1.6.21" apply false
+    kotlin("jvm") version "1.8.10" apply false
+    kotlin("kapt") version "1.8.10" apply false
+    kotlin("plugin.spring") version "1.8.10" apply false
 
     id("github") apply false
 }
 
+jgitver {
+    strategy = fr.brouillard.oss.jgitver.Strategies.MAVEN
+}
 
 java {
-    targetCompatibility = JavaVersion.VERSION_11
-    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
@@ -32,6 +35,10 @@ repositories {
     maven("https://repo.spring.io/snapshot")
     mavenCentral()
 }
+
+//allprojects {
+//  apply(plugin = "com.github.ben-manes.versions")
+//}
 
 //dependencies {
 //    implementation("org.springframework.boot:spring-boot-starter-web")
@@ -79,9 +86,6 @@ repositories {
 //    buildInfo()
 //}
 //
-jgitver {
-    strategy = fr.brouillard.oss.jgitver.Strategies.MAVEN
-}
 //
 //tasks.register<Copy>("gh-pages") {
 //    group = "documentation"
