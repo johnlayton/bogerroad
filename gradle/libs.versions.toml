@@ -1,0 +1,22 @@
+[versions]
+testcontainers = "1.17.6"
+
+[libraries]
+testcontainers-junit = { group = 'org.testcontainers', name = 'junit-jupiter', version.ref = 'testcontainers' }
+testcontainers-postgresql = { group = 'org.testcontainers', name = 'postgresql', version.ref = 'testcontainers' }
+testcontainers-rabbitmq = { group = 'org.testcontainers', name = 'rabbitmq', version.ref = 'testcontainers' }
+com-newrelic-agent-java = { group = 'com.newrelic.agent.java', name = 'newrelic-agent', version = '8.0.0' }
+io-github-sercasti-spring-httpserver-timings = { group = 'io.github.sercasti', name = 'spring-httpserver-timings', version = '0.0.7' }
+
+[bundles]
+testcontainers = [
+    'testcontainers-junit',
+    'testcontainers-postgresql',
+    'testcontainers-rabbitmq'
+]
+
+[plugins]
+spotbugs = { id = 'com.github.spotbugs', version = '5.0.13' }
+versions = { id = 'com.github.ben-manes.versions', version = '0.43.0' }
+git-versions = { id = 'io.freefair.git-version', version = '6.5.0.3' }
+sonarqube = { id = 'org.sonarqube', version = '3.4.0.2513' }
