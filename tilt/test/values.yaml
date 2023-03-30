@@ -1,0 +1,17 @@
+extraEnvVars:
+  - name: SPRING_DATASOURCE_URL
+    value: 'jdbc:postgresql://postgresql:5432/bulk_test'
+  - name: SPRING_DATASOURCE_USERNAME
+    value: 'dbuser'
+  - name: SPRING_DATASOURCE_PASSWORD
+    value: 'dbpass'
+  - name: SPRING_ZIPKIN_BASE-URL
+    value: 'http://simplest-collector.default.svc.cluster.local:9411'
+
+springboot:
+  profile: "dev"
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true

@@ -16,9 +16,12 @@ primary:
         echo "Running the debug script"
       init.sql: |
         CREATE USER dbuser WITH PASSWORD 'dbpass';
-        CREATE DATABASE bulk-graph-simple;
+        
+        CREATE DATABASE bulk_graph_simple;
         GRANT ALL PRIVILEGES ON DATABASE bulk_graph_simple TO dbuser;
-        ALTER DATABASE bulk_graph_simple OWNER TO dbuser;
+        
+        CREATE DATABASE bulk_test;
+        GRANT ALL PRIVILEGES ON DATABASE bulk_test TO dbuser;
       complete.sh: |
         #!/bin/sh
         echo "Running the complete script"
