@@ -1,10 +1,13 @@
 # -*- mode: Python -*-
 #
-load('ext://tilt_inspector', 'tilt_inspector')
 load('ext://configmap', 'configmap_create', 'configmap_from_dict')
 load('ext://secret', 'secret_yaml_generic', 'secret_from_dict')
-load('ext://helm_remote', 'helm_remote')
 load('ext://pack', 'pack')
+load('ext://helm_remote', 'helm_remote')
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+load('ext://namespace', 'namespace_create')
+load('ext://coreos_prometheus', 'setup_monitoring', 'get_prometheus_resources', 'get_prometheus_dependencies')
+load('ext://cert_manager', 'deploy_cert_manager')
 
 # tilt_inspector()
 analytics_settings(enable=False)
@@ -51,47 +54,47 @@ setup_monitoring()
 # Setup Elastic + Kibana using the Custom Resource Definition
 ###
 
-namespace_create('elastic-system')
-k8s_yaml(local('curl --silent --show-error --location https://download.elastic.co/downloads/eck/2.0.0/crds.yaml',
-               quiet=True))
-k8s_yaml(local('curl --silent --show-error --location https://download.elastic.co/downloads/eck/2.0.0/operator.yaml',
-               quiet=True))
-
-k8s_yaml('tilt/elastic/elastic.yaml')
-k8s_yaml('tilt/elastic/kibana.yaml')
-
-k8s_resource(
-    new_name='elasticsearch',
-    objects=['quickstart:elasticsearch'],
-    extra_pod_selectors=[{
-        'elasticsearch.k8s.elastic.co/cluster-name': 'quickstart'
-    }],
-    resource_deps=['elastic-operator'],
-    port_forwards=9200
-)
-k8s_resource(
-    new_name='kibana',
-    objects=['quickstart:kibana'],
-    extra_pod_selectors=[{
-        'kibana.k8s.elastic.co/name': 'quickstart'
-    }],
-    labels=['logging'],
-    resource_deps=['elastic-operator', 'elasticsearch'],
-    port_forwards=5601
-)
-local_resource(
-    'kibana-password',
-    'echo "    USER: elastic";' +
-    'echo "PASSWORD: $(kubectl get secret quickstart-es-elastic-user -o=jsonpath="{.data.elastic}" | base64 --decode)";',
-    trigger_mode=TRIGGER_MODE_MANUAL,
-    labels=['logging'],
-    auto_init=False
-)
-
-docker_build('thirdparty/fluentd', 'tilt/fluentd')
-k8s_yaml('tilt/fluentd/fluentd-config.yaml')
-k8s_yaml('tilt/fluentd/fluentd-rbac.yaml')
-k8s_yaml('tilt/fluentd/fluentd-daemonset.yaml')
+# namespace_create('elastic-system')
+# k8s_yaml(local('curl --silent --show-error --location https://download.elastic.co/downloads/eck/2.0.0/crds.yaml',
+#                quiet=True))
+# k8s_yaml(local('curl --silent --show-error --location https://download.elastic.co/downloads/eck/2.0.0/operator.yaml',
+#                quiet=True))
+#
+# k8s_yaml('tilt/elastic/elastic.yaml')
+# k8s_yaml('tilt/elastic/kibana.yaml')
+#
+# k8s_resource(
+#     new_name='elasticsearch',
+#     objects=['quickstart:elasticsearch'],
+#     extra_pod_selectors=[{
+#         'elasticsearch.k8s.elastic.co/cluster-name': 'quickstart'
+#     }],
+#     resource_deps=['elastic-operator'],
+#     port_forwards=9200
+# )
+# k8s_resource(
+#     new_name='kibana',
+#     objects=['quickstart:kibana'],
+#     extra_pod_selectors=[{
+#         'kibana.k8s.elastic.co/name': 'quickstart'
+#     }],
+#     labels=['logging'],
+#     resource_deps=['elastic-operator', 'elasticsearch'],
+#     port_forwards=5601
+# )
+# local_resource(
+#     'kibana-password',
+#     'echo "    USER: elastic";' +
+#     'echo "PASSWORD: $(kubectl get secret quickstart-es-elastic-user -o=jsonpath="{.data.elastic}" | base64 --decode)";',
+#     trigger_mode=TRIGGER_MODE_MANUAL,
+#     labels=['logging'],
+#     auto_init=False
+# )
+#
+# docker_build('thirdparty/fluentd', 'tilt/fluentd')
+# k8s_yaml('tilt/fluentd/fluentd-config.yaml')
+# k8s_yaml('tilt/fluentd/fluentd-rbac.yaml')
+# k8s_yaml('tilt/fluentd/fluentd-daemonset.yaml')
 
 ###
 # Setup Tracing
@@ -100,22 +103,22 @@ k8s_yaml('tilt/fluentd/fluentd-daemonset.yaml')
 # namespace_create('cert-manager')
 # k8s_yaml(local('curl --silent --show-error --location https://github.com/cert-manager/cert-manager/releases/download/v1.6.2/cert-manager.yaml'))
 
-namespace_create('observability')
-k8s_yaml(local(
-    'curl --silent --show-error --location https://github.com/jaegertracing/jaeger-operator/releases/download/v1.31.0/jaeger-operator.yaml'))
-
-k8s_yaml('tilt/jaeger/jaeger.yaml')
-
-k8s_resource(
-    new_name='jaeger',
-    objects=['simplest:jaeger'],
-    extra_pod_selectors=[{
-        'app.kubernetes.io/name': 'simplest'
-    }],
-    labels=['tracing'],
-    resource_deps=['jaeger-operator'],
-    port_forwards=['16686', '9411']
-)
+# namespace_create('observability')
+# k8s_yaml(local(
+#     'curl --silent --show-error --location https://github.com/jaegertracing/jaeger-operator/releases/download/v1.31.0/jaeger-operator.yaml'))
+#
+# k8s_yaml('tilt/jaeger/jaeger.yaml')
+#
+# k8s_resource(
+#     new_name='jaeger',
+#     objects=['simplest:jaeger'],
+#     extra_pod_selectors=[{
+#         'app.kubernetes.io/name': 'simplest'
+#     }],
+#     labels=['tracing'],
+#     resource_deps=['jaeger-operator'],
+#     port_forwards=['16686', '9411']
+# )
 
 ###
 # Setup PostgreSQL
@@ -139,34 +142,35 @@ k8s_resource(
     port_forwards=['5432:5432']
 )
 
+
 ###
 # Setup GraphQL
 ###
 
-custom_build(
-    'bulk-graph-simple',
-    './gradlew --parallel bulk-graph:simple:bootBuildImage --imageName=$EXPECTED_REF',
-    deps=['bulk-graph/simple/src', 'bulk-graph/simple/build.gradle']
-)
-helm_resource(
-    'bulk-graph-simple',
-    'charts/springboot',
-    image_deps=['bulk-graph-simple'],
-    image_keys=[
-        ('image.repository', 'image.tag')
-    ],
-    flags=[
-        '-f', './tilt/graph/simple/values.yaml',
-    ],
-    labels=['graph'],
-    resource_deps=get_prometheus_dependencies()
-)
-k8s_resource(
-    'bulk-graph-simple',
-    port_forwards=['8080:8080', '8081:8081'],
-    trigger_mode=TRIGGER_MODE_MANUAL,
-    resource_deps=get_prometheus_dependencies()
-)
+# custom_build(
+#     'bulk-graph-simple',
+#     './gradlew --parallel bulk-graph:simple:bootBuildImage --imageName=$EXPECTED_REF',
+#     deps=['bulk-graph/simple/src', 'bulk-graph/simple/build.gradle']
+# )
+# helm_resource(
+#     'bulk-graph-simple',
+#     'charts/springboot',
+#     image_deps=['bulk-graph-simple'],
+#     image_keys=[
+#         ('image.repository', 'image.tag')
+#     ],
+#     flags=[
+#         '-f', './tilt/graph/simple/values.yaml',
+#     ],
+#     labels=['graph'],
+#     resource_deps=get_prometheus_dependencies()
+# )
+# k8s_resource(
+#     'bulk-graph-simple',
+#     port_forwards=['8080:8080', '8081:8081'],
+#     trigger_mode=TRIGGER_MODE_MANUAL,
+#     resource_deps=get_prometheus_dependencies()
+# )
 
 # helm_remote('mysql',
 #            repo_name='stable',
@@ -275,3 +279,33 @@ k8s_resource(
 # }))
 # k8s_yaml('tilt/tooljet/kubernetes-tooljet-application.yaml')
 # k8s_resource('tooljet', port_forwards=['3000:3000'])
+
+
+##
+# Setup Test
+##
+
+custom_build(
+    'bulk-test',
+    './gradlew --parallel bulk-test:bootBuildImage --imageName=$EXPECTED_REF',
+    deps=['bulk-test/src', 'bulk-test/build.gradle.kts']
+)
+helm_resource(
+    'bulk-test',
+    'charts/springboot',
+    image_deps=['bulk-test'],
+    image_keys=[
+        ('image.repository', 'image.tag')
+    ],
+    flags=[
+        '-f', './tilt/test/values.yaml',
+    ],
+    labels=['test'],
+    resource_deps=get_prometheus_dependencies()
+)
+k8s_resource(
+    'bulk-test',
+    port_forwards=['8080:8080', '8081:8081'],
+    trigger_mode=TRIGGER_MODE_MANUAL,
+    resource_deps=get_prometheus_dependencies()
+)

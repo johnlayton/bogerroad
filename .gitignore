@@ -4,7 +4,9 @@
 /bulk-graph/webmvc-http/build/
 /bulk-cdktf/build/
 /bulk-cdktf/kotlin-aws/build/
+/bulk-cdktf/kotlin-aws/cdktf.out/
 /bulk-cdktf/kotlin-docker/build/
+/bulk-cdktf/kotlin-docker/cdktf.out/
 /bulk-scratch/build/
 /bulk-test/build/
 /bulk-trait/build/
