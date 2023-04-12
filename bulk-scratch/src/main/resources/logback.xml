@@ -1,0 +1,32 @@
+<configuration>
+
+    <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <provider class="org.bogerroad.logging.ReferenceJsonProvider"/>
+<!--            <providers>-->
+<!--                <provider class="org.bogerroad.ExceptionScratch.ReferenceJsonProvider"/>-->
+<!--            </providers>-->
+<!--
+            <provider class="net.logstash.logback.composite.loggingevent.StackTraceJsonProvider">
+
+            </provider>
+-->
+            <stackTrace>
+                <throwableConverter class="org.bogerroad.logging.CompressedStackTraceConverter" />
+            </stackTrace>
+            <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+<!--            <throwableConverter class="org.bogerroad.ExceptionScratch.CompressedStackTraceConverter">-->
+<!--                <maxDepthPerThrowable>30</maxDepthPerThrowable>-->
+<!--                <maxLength>2048</maxLength>-->
+<!--                <rootCauseFirst>true</rootCauseFirst>-->
+<!--                <inlineHash>true</inlineHash>-->
+<!--            </throwableConverter>-->
+<!--            <shortenedLoggerNameLength>36</shortenedLoggerNameLength>-->
+            <timeZone>UTC</timeZone>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="jsonConsoleAppender"/>
+    </root>
+</configuration>

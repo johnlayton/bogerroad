@@ -3,36 +3,16 @@ package org.bogerroad;
 
 //import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.fasterxml.jackson.databind.ObjectMapper;
-import org.bogerroad.MapStructScratch.Input.IdWrapper;
-import org.bogerroad.MapStructScratch.Input.Source;
-import org.bogerroad.MapStructScratch.Input.Id;
-import org.bogerroad.MapStructScratch.Input.Complex;
-import org.bogerroad.MapStructScratch.Input.Things;
-import org.bogerroad.MapStructScratch.Input.Thing;
-import org.bogerroad.MapStructScratch.Output.Od;
-import org.bogerroad.MapStructScratch.Output.OdWrapper;
-import org.bogerroad.MapStructScratch.Output.Target;
-import org.bogerroad.MapStructScratch.Output.Widget;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.BeforeMapping;
-import org.mapstruct.Context;
-import org.mapstruct.DecoratedWith;
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.IterableMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-import org.mapstruct.Qualifier;
-import org.mapstruct.TargetType;
+
+import org.bogerroad.MapStructScratch.Input.*;
+import org.bogerroad.MapStructScratch.Input.Teacher;
+import org.bogerroad.MapStructScratch.Output.*;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bogerroad.MapStructScratch.Input.Thing.thing;
@@ -42,29 +22,83 @@ import static org.bogerroad.MapStructScratch.Input.Things.things;
 public class MapStructScratch {
 
     public static void main(final String[] args) {
-        final BasicContext context = new BasicContext();
-        System.out.println(Mappers.getMapper(BasicMapper.class).map(
-                new Source(new Id(UUID.randomUUID(), UUID.randomUUID()),
-                        things(thing("A", 1), thing("B", 2)),
-                        "A", "B", "C"),
-                context
-        ));
-        System.out.println(Mappers.getMapper(BasicMapper.class).map(
-                new Target(UUID.randomUUID().toString(),
-                        List.of(new Widget("A-1"), new Widget("B-2"), new Widget("C-3")),
-                        "A-B-C")));
-        System.out.println(context);
 
-        final BasicContext ctx = new BasicContext();
-        System.out.println(Mappers.getMapper(WrapperMapper.class).map(
-                new IdWrapper(new Id(UUID.randomUUID(), UUID.randomUUID())), ctx));
-        System.out.println(Mappers.getMapper(WrapperMapper.class).map(
-                new OdWrapper(new Od(UUID.randomUUID().toString(), UUID.randomUUID().toString())), ctx));
-        System.out.println(ctx);
+        Staff staff = Mappers.getMapper(TeachersMapper.class).map(new Teachers(List.of(
+                new Teacher("A", Set.of(new TeachingTrait())),
+                new Teacher("B", Set.of(new TeachingTrait())),
+                new Teacher("C", Set.of(new AssistingTrait())),
+                new Teacher("D", Set.of(new NursingTrait())),
+                new Teacher("E", Set.of(new TeachingTrait(), new NursingTrait()))
+        )));
 
+//        final BasicContext context = new BasicContext();
+//        System.out.println("=================================================================");
+//        System.out.println(Mappers.getMapper(BasicMapper.class).map(
+//                new Source(new Id(UUID.randomUUID(), UUID.randomUUID()),
+//                        things(thing("A", 1), thing("B", 2)),
+//                        "A", "B", "C"),
+//                context
+//        ));
+//        System.out.println("=================================================================");
+//        System.out.println(Mappers.getMapper(BasicMapper.class).map(
+//                new Target(UUID.randomUUID().toString(),
+//                        List.of(new Widget("A-1"), new Widget("B-2"), new Widget("C-3")),
+//                        "A-B-C")));
+//        System.out.println("=================================================================");
+//        System.out.println(context);
+//        System.out.println("=================================================================");
+
+//        final BasicContext ctx = new BasicContext();
+//        System.out.println(Mappers.getMapper(WrapperMapper.class).map(
+//                new IdWrapper(new Id(UUID.randomUUID(), UUID.randomUUID())), ctx));
+//        System.out.println(Mappers.getMapper(WrapperMapper.class).map(
+//                new OdWrapper(new Od(UUID.randomUUID().toString(), UUID.randomUUID().toString())), ctx));
+//        System.out.println(ctx);
     }
 
     public static class Input {
+
+        public static class Teachers {
+            private final List<Teacher> teachers;
+
+            public Teachers(List<Teacher> teachers) {
+                this.teachers = teachers;
+            }
+
+            public List<Teacher> getTeachers() {
+                return teachers;
+            }
+        }
+
+        public static class Teacher {
+            private final Set<Trait> traits;
+            private final String code;
+
+            public Teacher(String code, Set<Trait> traits) {
+                this.code = code;
+                this.traits = traits;
+            }
+
+            public Set<Trait> getTraits() {
+                return traits;
+            }
+
+            public String getCode() {
+                return code;
+            }
+        }
+
+        public static interface Trait {
+        }
+
+        public static class TeachingTrait implements Trait {
+        }
+
+        public static class AssistingTrait implements Trait {
+        }
+
+        public static class NursingTrait implements Trait {
+        }
 
         public static class Id {
             private final UUID id1;
@@ -242,6 +276,48 @@ public class MapStructScratch {
 
     public static class Output {
 
+        public static class Staff {
+            private final List<Employee> employees;
+
+            public Staff(List<Employee> employees) {
+                this.employees = employees;
+            }
+
+            public List<Employee> getEmployees() {
+                return employees;
+            }
+        }
+
+        public static abstract class Employee {
+            private final String code;
+
+            public Employee(String code) {
+                this.code = code;
+            }
+
+            public String getCode() {
+                return code;
+            }
+        }
+
+        public static class Teacher extends Employee {
+            public Teacher(String code) {
+                super(code);
+            }
+        }
+
+        public static class Assistant extends Employee {
+            public Assistant(String code) {
+                super(code);
+            }
+        }
+
+        public static class Nurse extends Employee {
+            public Nurse(String code) {
+                super(code);
+            }
+        }
+
         public static class Od {
             private final String id1;
             private final String id2;
@@ -332,6 +408,20 @@ public class MapStructScratch {
             public String toString() {
                 return "OdWrapper{od=" + od + '}';
             }
+        }
+    }
+
+    @Mapper(uses = TeacherMapper.class)
+    public static interface TeachersMapper {
+        @Mapping(source = "teachers", target = "employees")
+        Staff map(Teachers teachers);
+    }
+
+    @Mapper
+    public static class TeacherMapper {
+        public Employee map(Teacher teacher) {
+//            teacher.getTraits()
+            return null;
         }
     }
 
@@ -466,9 +556,13 @@ public class MapStructScratch {
     @DecoratedWith(BasicDecorator.class)
     public interface BasicMapper {
 
-//        BasicMapper INSTANCE = Mappers.getMapper(BasicMapper.class);
+/*
+        BasicMapper INSTANCE = Mappers.getMapper(BasicMapper.class);
+*/
 
-        //        @Mapping(source = "id.id1", target = "id")
+        /*
+                @Mapping(source = "id.id1", target = "id")
+        */
         @Mapping(source = ".", target = "complex", qualifiedByName = "MapComplex")
         @Mapping(source = "things", target = "widgets")
         Target map(Source source, @Context BasicContext context);
@@ -557,7 +651,7 @@ public class MapStructScratch {
         @BeforeMapping
         @SuppressWarnings("checkstyle:DesignForExtension")
         public <T> T getMappedInstance(final Object source, @TargetType final Class<T> targetType) {
-            System.out.printf("Looking for %s%n", source);
+//            System.out.printf("Looking for %s%n", source);
             return targetType.cast(knownInstances.get(source));
         }
 
